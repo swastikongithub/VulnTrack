@@ -59,9 +59,9 @@
   --color-line-strong: rgb(148 170 210 / 0.26);
 
   /* ── Color: text ──────────────────────────────────────── */
-  --color-fg: #e8edf5; /* 16.0:1 on ink-850 */
+  --color-fg: #e8edf5; /* 16.3:1 on ink-850 */
   --color-fg-muted: #a1acbd; /* 8.4:1 */
-  --color-fg-subtle: #7d899c; /* 5.3:1 — meta text only */
+  --color-fg-subtle: #7d899c; /* 5.4:1 on ink-850, 4.5:1 on ink-700 — meta text only */
   --color-fg-disabled: #4d5768; /* non-essential, disabled only */
 
   /* ── Color: brand ─────────────────────────────────────── */
@@ -145,14 +145,14 @@
   --art-cx: 50vw;
   --art-cy: 30vh;
   --art-r: 120px;
-  --scan-y: 50%;
-  --scan-strength: 0;
 }
 
 @layer base {
   html {
     color-scheme: dark;
     background: var(--color-ink-950);
+    /* Reserve the scrollbar track so content growing past the fold never shifts layout sideways */
+    scrollbar-gutter: stable;
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
@@ -227,8 +227,9 @@
   /* Film grain — sits on the atmosphere layer, never on content */
   .grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.045;
-    mix-blend-mode: overlay;
+    /* Plain alpha, no blend mode: a blend group over the live WebGL canvas would be
+       re-rasterized every frame. */
+    opacity: 0.028;
   }
 
   /*

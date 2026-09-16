@@ -1,18 +1,14 @@
-import { Logo } from '@/design-system/components'
+import { RouterProvider } from 'react-router'
 import { MotionPreferenceProvider } from '@/design-system/motion/MotionPreferenceProvider'
 import { SmoothScroll } from '@/design-system/motion/SmoothScroll'
+import { router } from './router'
 
-/**
- * Application root: global providers wrap the app content.
- * Auth routes are mounted here once the auth pages are implemented.
- */
+/** Application root: global providers wrap the router. */
 export default function App() {
   return (
     <MotionPreferenceProvider>
       <SmoothScroll />
-      <main className="grid min-h-dvh place-items-center bg-ink-950 px-6">
-        <Logo />
-      </main>
+      <RouterProvider router={router} />
     </MotionPreferenceProvider>
   )
 }

@@ -175,7 +175,7 @@ function Dust({ uniforms, tier, dustRef }) {
 
 /* ───────────────────────── Rig / state driver ───────────────────────── */
 
-function Rig({ uniforms, running, reduced, refs }) {
+function Rig({ uniforms, running, refs }) {
   const { camera, invalidate } = useThree()
   const sim = useRef({
     time: 8.4,
@@ -189,6 +189,7 @@ function Rig({ uniforms, running, reduced, refs }) {
     lastPulseAt: -Infinity,
     nextVerifyPulse: 0,
     scanCssY: -1,
+    edgeLight: null,
   })
   const scratch = useMemo(() => new Vector3(), [])
 
@@ -346,15 +347,21 @@ function Rig({ uniforms, running, reduced, refs }) {
       camera.updateProjectionMatrix()
       u.uFade.value = layout.pinned ? 1 - m.dolly * 0.5 : Math.max(0, 1 - s.scroll * 1.15)
 
-      // Expose scan height to CSS so the auth panel edge light tracks the sweep
+      // Drive the auth panel's edge light from the scan sweep. Written straight to that one
+      // element's transform — never to :root custom properties, which would restyle the whole
+      // document every frame.
       if (layout.pinned) {
-        scratch.set(0, scanY, 0)
-        scratch.project(camera)
-        const y = Math.round(((1 - scratch.y) / 2) * H)
-        if (Math.abs(y - m.scanCssY) >= 1) {
-          m.scanCssY = y
-          document.documentElement.style.setProperty('--scan-y', `${y}px`)
-          document.documentElement.style.setProperty('--scan-strength', (0.35 + m.energy * 0.65).toFixed(2))
+        m.edgeLight ??= document.getElementById('scan-edge-light')
+        if (m.edgeLight?.isConnected) {
+          scratch.set(0, scanY, 0).project(camera)
+          const y = Math.round(((1 - scratch.y) / 2) * H)
+          if (Math.abs(y - m.scanCssY) >= 1) {
+            m.scanCssY = y
+            m.edgeLight.style.transform = `translate3d(0, ${y}px, 0) translateY(-50%)`
+            m.edgeLight.style.opacity = (0.35 + m.energy * 0.65).toFixed(2)
+          }
+        } else {
+          m.edgeLight = null
         }
       }
     }
@@ -363,7 +370,7 @@ function Rig({ uniforms, running, reduced, refs }) {
   return null
 }
 
-function Scene({ tier, running, reduced }) {
+function Scene({ tier, running }) {
   const uniforms = useMemo(() => createUniforms(), [])
   const refs = {
     shell: useRef(null),
@@ -375,7 +382,7 @@ function Scene({ tier, running, reduced }) {
 
   return (
     <>
-      <Rig uniforms={uniforms} running={running} reduced={reduced} refs={refs} />
+      <Rig uniforms={uniforms} running={running} refs={refs} />
       <Dust uniforms={uniforms} tier={tier} dustRef={refs.dust} />
       <group ref={refs.shell} rotation={[0.2, 0, -0.12]}>
         <Surface uniforms={uniforms} tier={tier} />
@@ -392,7 +399,7 @@ function Scene({ tier, running, reduced }) {
  * `running=false` switches to on-demand rendering (reduced motion, paused,
  * scrolled offscreen) while still reflecting every state change.
  */
-export default function PerimeterCanvas({ tier, running, reduced, onReady }) {
+export default function PerimeterCanvas({ tier, running, onReady }) {
   const dpr = tier === 'low' ? [1, 1.5] : [1, 1.75]
 
   return (
@@ -408,7 +415,7 @@ export default function PerimeterCanvas({ tier, running, reduced, onReady }) {
       }}
       style={{ position: 'absolute', inset: 0 }}
     >
-      <Scene tier={tier} running={running} reduced={reduced} />
+      <Scene tier={tier} running={running} />
     </Canvas>
   )
 }

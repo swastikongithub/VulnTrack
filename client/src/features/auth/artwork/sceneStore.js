@@ -18,6 +18,8 @@ export const sceneStore = createStore({
   pulseAt: -Infinity,
   /** user toggled "pause motion" */
   paused: false,
+  /** lifecycle narration counter (see useLifecycleDriver) */
+  cycle: 0,
   /** 0..1 scroll progress past the art window (mobile / tablet only) */
   scroll: 0,
   /** measured by useArtLayout */
@@ -28,7 +30,15 @@ export const sceneActions = {
   setMode: (mode) => sceneStore.setState({ mode, progress: 0 }),
   setStatus: (status) => sceneStore.setState({ status }),
   setProgress: (progress) => sceneStore.setState({ progress: Math.max(0, Math.min(1, progress)) }),
-  error: () => sceneStore.setState({ status: 'error', errorAt: performance.now() }),
+  /** Error impulse: tints the perimeter, then settles back to idle */
+  error: () => {
+    const errorAt = performance.now()
+    sceneStore.setState({ status: 'error', errorAt })
+    setTimeout(() => {
+      const s = sceneStore.getState()
+      if (s.status === 'error' && s.errorAt === errorAt) sceneStore.setState({ status: 'idle' })
+    }, 1600)
+  },
   pulse: () => sceneStore.setState({ pulseAt: performance.now() }),
   togglePaused: () => sceneStore.setState((s) => ({ paused: !s.paused })),
 }

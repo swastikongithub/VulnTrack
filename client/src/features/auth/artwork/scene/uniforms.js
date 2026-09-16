@@ -2,7 +2,7 @@ import { Color, Vector2 } from 'three'
 
 /** Palette mirrors the CSS tokens in index.css (converted to linear by three.Color). */
 export const PALETTE = {
-  asset: '#8ea3c4',
+  asset: '#a9bddb',
   ion: '#7cdcff',
   iris: '#a497ff',
   finding: '#f6b25b',

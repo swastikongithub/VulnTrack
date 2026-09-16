@@ -40,11 +40,20 @@ export function LifecycleHud() {
   useGSAP(
     () => {
       if (reducedMotion) return
+      const q = gsap.utils.selector(rootRef)
+      const ring = q('[data-hud="ring"]')
+      const ticks = q('[data-hud="tick"]')
+      const labels = q('[data-hud="label"]')
       const tl = gsap.timeline({ defaults: { ease: 'expo.out' } })
-      tl.from('[data-hud="ring"]', { strokeDashoffset: 620, duration: 1.8 }, 0.2)
-        .from('[data-hud="tick"]', { opacity: 0, duration: 0.5, stagger: { each: 0.008, from: 'start' } }, 0.3)
-        .from('[data-hud="label"]', { opacity: 0, y: 6, duration: 0.7, stagger: 0.06 }, 0.7)
-        .from('[data-hud="indicator"]', { opacity: 0, scale: 0.94, duration: 1 }, 1)
+      // fromTo (not from): the effect re-runs when the layout becomes pinned, and from()
+      // would capture half-finished values as its end state.
+      if (ring.length) tl.fromTo(ring, { strokeDashoffset: 620 }, { strokeDashoffset: 0, duration: 1.8 }, 0.2)
+      if (ticks.length) {
+        tl.fromTo(ticks, { opacity: 0 }, { opacity: 1, duration: 0.5, stagger: { each: 0.008, from: 'start' } }, 0.3)
+      }
+      if (labels.length) {
+        tl.fromTo(labels, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.06 }, 0.7)
+      }
     },
     { scope: rootRef, dependencies: [pinned] },
   )

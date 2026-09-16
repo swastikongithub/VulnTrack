@@ -69,7 +69,7 @@ export const TextField = forwardRef(function TextField(
   const invalid = Boolean(error)
 
   return (
-    <div className={cn('group/field', className)}>
+    <div className={cn('group/field pb-2', className)}>
       <div className="flex min-h-5 items-baseline justify-between gap-3">
         <label htmlFor={id} className="text-label text-fg">
           {label}
@@ -99,11 +99,11 @@ export const TextField = forwardRef(function TextField(
           aria-required={required || undefined}
           className={cn(
             'peer block h-12 w-full rounded-md bg-surface-well text-body-lg text-fg shadow-[inset_0_1px_2px_rgb(0_0_0/0.35)]',
-            'ring-1 ring-inset ring-line placeholder:text-fg-subtle/80',
+            'ring-1 ring-inset placeholder:text-fg-subtle',
             'transition-[box-shadow,background-color] duration-[var(--duration-fast)] ease-[var(--ease-standard)]',
-            'hover:ring-line-strong focus:bg-ink-700/60 focus:outline-none focus:ring-2 focus:ring-ion/80',
-            'focus-visible:outline-none disabled:opacity-50 read-only:text-fg-muted',
-            invalid && 'ring-danger/70 hover:ring-danger focus:ring-danger',
+            'focus:bg-ink-700/60 focus:outline-none focus:ring-2 focus-visible:outline-none disabled:opacity-50',
+            // Mutually exclusive state classes — never let two ring colors compete in the cascade
+            invalid ? 'ring-danger/70 hover:ring-danger focus:ring-danger' : 'ring-line hover:ring-line-strong focus:ring-ion/80',
             leadingIcon ? 'pl-11' : 'pl-3.5',
             trailing ? 'pr-12' : 'pr-3.5',
             inputClassName,
@@ -122,7 +122,7 @@ export const TextField = forwardRef(function TextField(
           )}
         />
 
-        {trailing && <div className="absolute inset-y-0 right-1.5 flex items-center">{trailing}</div>}
+        {trailing && <div className="absolute inset-y-0 right-0.5 flex items-center">{trailing}</div>}
       </div>
 
       <FieldMessage id={messageId} error={error} warning={warning} hint={hint} />

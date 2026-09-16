@@ -39,7 +39,7 @@ export function PasswordStrength({ id, score, checks, active }) {
             </span>
           ))}
         </div>
-        <p className={cn('eyebrow w-16 text-right tabular', active ? level.tone : 'text-fg-subtle')} aria-live="polite">
+        <p className={cn('eyebrow w-[5.5rem] shrink-0 whitespace-nowrap text-right tabular', active ? level.tone : 'text-fg-subtle')} aria-live="polite">
           <span className="sr-only">Password strength: </span>
           {active ? level.label : '—'}
         </p>

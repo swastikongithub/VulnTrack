@@ -82,11 +82,11 @@ export const shellVertex = /* glsl */ `
     vec3 n = normalize((viewMatrix * vec4(normalize(world.xyz), 0.0)).xyz);
     float facing = n.z * 0.5 + 0.5;
 
-    float size = aKind > 1.5 ? 6.2 : aKind > 0.5 ? 4.8 : 2.8;
+    float size = aKind > 1.5 ? 7.0 : aKind > 0.5 ? 5.4 : 3.2;
     size *= 1.0 + vScan * 0.9 + vLens * 0.9 + vPulse * 1.1 + uSuccess * 0.25;
     gl_PointSize = size * uPixelRatio * (8.5 / -mv.z) * reveal;
 
-    vAlpha = mix(0.18, 1.0, facing) * reveal * uFade;
+    vAlpha = mix(0.22, 1.0, facing) * reveal * uFade;
     vKind = aKind;
     vSeed = aSeed;
   }
@@ -111,7 +111,7 @@ export const shellFragment = /* glsl */ `
 
     vec3 asset = mix(uAsset, uIris, uRekey * 0.65);
     vec3 col = asset;
-    float intensity = 0.42 + uEnergy * 0.25;
+    float intensity = 0.75 + uEnergy * 0.35;
 
     if (vKind > 0.5) {
       vec3 finding = vKind > 1.5 ? uCritical : uFinding;
@@ -163,7 +163,7 @@ export const linkFragment = /* glsl */ `
   void main() {
     vec3 base = mix(uIon, uIris, uRekey * 0.8);
     base = mix(base, uVerified, uSuccess * 0.5);
-    float a = (0.11 + uEnergy * 0.06 + vScan * 0.45 + vLens * 0.25) * vAlpha;
+    float a = (0.2 + uEnergy * 0.1 + vScan * 0.5 + vLens * 0.3) * vAlpha;
     gl_FragColor = vec4(base, a);
     #include <colorspace_fragment>
   }
