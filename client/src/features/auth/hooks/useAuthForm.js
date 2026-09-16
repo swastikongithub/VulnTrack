@@ -10,6 +10,9 @@ import { sceneActions } from '../artwork/sceneStore'
  *   (2+ errors, when a summary is rendered) or the first invalid field.
  * - Keeps the artwork in sync: focus → energised, invalid submit → error impulse.
  *
+ * - Server-side field errors (API VALIDATION_FAILED) render in the same field
+ *   message rows via `applyServerErrors`, and clear when that field is edited.
+ *
  * `validate(values)` returns { field: message | undefined } in field order.
  */
 export function useAuthForm({ initialValues, validate, onSubmit, useSummary = false }) {
@@ -17,12 +20,16 @@ export function useAuthForm({ initialValues, validate, onSubmit, useSummary = fa
   const [touched, setTouched] = useState({})
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [serverErrors, setServerErrors] = useState({})
   const summaryRef = useRef(null)
   const fieldRefs = useRef({})
 
   const allErrors = validate(values)
   const errors = Object.fromEntries(
-    Object.entries(allErrors).map(([name, message]) => [name, touched[name] || submitted ? message : undefined]),
+    Object.entries(allErrors).map(([name, message]) => [
+      name,
+      (touched[name] || submitted ? message : undefined) ?? serverErrors[name],
+    ]),
   )
 
   const setValue = useCallback((name, value) => setValues((prev) => ({ ...prev, [name]: value })), [])
@@ -38,6 +45,7 @@ export function useAuthForm({ initialValues, validate, onSubmit, useSummary = fa
     onChange: (event) => {
       const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value
       setValue(name, value)
+      if (serverErrors[name]) setServerErrors(({ [name]: _cleared, ...rest }) => rest)
     },
     onFocus: () => {
       if (!submitting) sceneActions.setStatus('focus')
@@ -67,6 +75,21 @@ export function useAuthForm({ initialValues, validate, onSubmit, useSummary = fa
     Promise.resolve(onSubmit(values)).finally(() => setSubmitting(false))
   }
 
+  /**
+   * Shows API field errors for fields this form owns and focuses the first one.
+   * Returns false when none of the fields belong to this form.
+   */
+  const applyServerErrors = useCallback(
+    (fields = {}) => {
+      const known = Object.keys(initialValues).filter((name) => fields[name])
+      if (known.length === 0) return false
+      flushSync(() => setServerErrors(Object.fromEntries(known.map((name) => [name, fields[name]]))))
+      fieldRefs.current[known[0]]?.focus()
+      return true
+    },
+    [initialValues],
+  )
+
   const reset = useCallback(
     (next = initialValues) => {
       setValues(next)
@@ -88,5 +111,6 @@ export function useAuthForm({ initialValues, validate, onSubmit, useSummary = fa
     handleSubmit,
     reset,
     summaryRef,
+    applyServerErrors,
   }
 }

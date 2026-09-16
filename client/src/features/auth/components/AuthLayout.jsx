@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { Link, useLocation, useOutlet } from 'react-router'
 import { Logo } from '@/design-system/components'
 import { duration, ease, travel } from '@/design-system/motion/tokens'
@@ -7,9 +7,13 @@ import { ArtworkStage } from '../artwork/ArtworkStage'
 import { useSceneStore } from '../artwork/sceneStore'
 import { useArtLayout } from '../artwork/useArtLayout'
 import { ArtCaption } from './ArtCaption'
-import { DevPreviewPanel } from './DevPreviewPanel'
 import { ModeSwitch } from './ModeSwitch'
 import { MotionToggle } from './MotionToggle'
+
+// Development-only tooling; the dynamic import keeps it (and its fixtures) out of production bundles.
+const DevPreviewPanel = import.meta.env.DEV
+  ? lazy(() => import('./DevPreviewPanel').then((m) => ({ default: m.DevPreviewPanel })))
+  : null
 
 /** Depth of each screen in the auth flow — drives transition direction. */
 const DEPTH = {
@@ -149,7 +153,11 @@ export function AuthLayout() {
         </main>
       </div>
 
-      {import.meta.env.DEV && <DevPreviewPanel />}
+      {DevPreviewPanel && (
+        <Suspense fallback={null}>
+          <DevPreviewPanel />
+        </Suspense>
+      )}
     </>
   )
 }

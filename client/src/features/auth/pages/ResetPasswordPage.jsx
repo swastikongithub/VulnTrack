@@ -33,9 +33,11 @@ export function ResetPasswordPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
-  // checking | form | success | expired | invalid
+  // checking | form | success | expired | invalid | unavailable (couldn't check the link)
   const [view, setView] = useState('checking')
   const [authError, setAuthError] = useState(null)
+  const [checkError, setCheckError] = useState(null)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -49,13 +51,16 @@ export function ResetPasswordPage() {
       })
       .catch((error) => {
         if (cancelled) return
-        setView(error.code === AUTH_ERROR.TOKEN_EXPIRED ? 'expired' : 'invalid')
+        const linkProblem = error.code === AUTH_ERROR.TOKEN_EXPIRED || error.code === AUTH_ERROR.TOKEN_INVALID
+        // Network / server / rate-limit failures say nothing about the link itself.
+        setCheckError(linkProblem ? null : error)
+        setView(error.code === AUTH_ERROR.TOKEN_EXPIRED ? 'expired' : linkProblem ? 'invalid' : 'unavailable')
         sceneActions.error()
       })
     return () => {
       cancelled = true
     }
-  }, [token])
+  }, [token, attempt])
 
   const form = useAuthForm({
     initialValues: INITIAL,
@@ -73,7 +78,7 @@ export function ResetPasswordPage() {
       } catch (error) {
         if (error.code === AUTH_ERROR.TOKEN_EXPIRED || error.code === AUTH_ERROR.TOKEN_INVALID) {
           setView(error.code === AUTH_ERROR.TOKEN_EXPIRED ? 'expired' : 'invalid')
-        } else {
+        } else if (!(error.code === AUTH_ERROR.VALIDATION && form.applyServerErrors(error.meta.fields))) {
           setAuthError(error)
         }
         sceneActions.error()
@@ -81,10 +86,12 @@ export function ResetPasswordPage() {
     },
   })
 
-  const { register, values, allErrors, submitted, submitting, handleSubmit, summaryRef } = form
-  const checks = passwordChecks(values.password)
+  const { register, values, errors, allErrors, submitted, submitting, handleSubmit, summaryRef } = form
+  // This page doesn't know the account's name/email; the server does. Reflect its verdict in the checklist.
+  const personalRejected = errors.password === "Don't include your name or email"
+  const checks = { ...passwordChecks(values.password), ...(personalRejected ? { personal: false } : {}) }
   const strength = estimateStrength(values.password)
-  const errorCopy = authError ? describeAuthError(authError) : null
+  const errorCopy = authError ? describeAuthError(authError, 'recovery') : null
 
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -120,6 +127,27 @@ export function ResetPasswordPage() {
             <StaggerItem className="grid gap-3">
               <Button fullWidth onClick={() => navigate('/forgot-password')}>
                 Request a new link
+              </Button>
+              <Button variant="ghost" fullWidth onClick={() => navigate('/login')}>
+                Back to sign in
+              </Button>
+            </StaggerItem>
+          </Stagger>
+        </motion.div>
+      )}
+
+      {view === 'unavailable' && (
+        <motion.div key="unavailable" {...fade}>
+          <Stagger>
+            <StaggerItem className="mb-8">
+              <StatusEmblem tone="failure" />
+            </StaggerItem>
+            <ScreenHeader focusOnMount eyebrow="Account recovery" tone="danger" title="We couldn't check your link">
+              {describeAuthError(checkError, 'recovery').body} Your link may still be valid.
+            </ScreenHeader>
+            <StaggerItem className="grid gap-3">
+              <Button fullWidth onClick={() => setAttempt((a) => a + 1)}>
+                Try again
               </Button>
               <Button variant="ghost" fullWidth onClick={() => navigate('/login')}>
                 Back to sign in

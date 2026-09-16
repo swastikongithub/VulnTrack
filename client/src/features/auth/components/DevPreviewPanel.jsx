@@ -5,12 +5,15 @@ import { Link, useLocation } from 'react-router'
 import { useMotionPreference } from '@/design-system/motion/MotionPreferenceProvider'
 import { duration, ease } from '@/design-system/motion/tokens'
 import { cn } from '@/lib/cn'
-import { MOCK_SCENARIOS } from '@/services/auth/mockScenarios'
+import { AUTH_MODE } from '@/services/auth/authService'
+import { API_SCENARIOS, MOCK_SCENARIOS } from '@/services/auth/mockScenarios'
+
+const SCENARIOS = AUTH_MODE === 'mock' ? MOCK_SCENARIOS : API_SCENARIOS
 
 const FILL_BY_PATH = {
-  '/login': MOCK_SCENARIOS.login,
-  '/signup': MOCK_SCENARIOS.signup,
-  '/forgot-password': MOCK_SCENARIOS.forgot,
+  '/login': SCENARIOS.login,
+  '/signup': SCENARIOS.signup,
+  '/forgot-password': SCENARIOS.forgot,
 }
 
 const itemClass =
@@ -18,7 +21,8 @@ const itemClass =
   'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ion'
 
 /**
- * DEVELOPMENT ONLY — exercises mock auth scenarios and motion preferences.
+ * DEVELOPMENT ONLY — form fills, link states and motion preferences. In the
+ * default API mode it only offers states the live backend can produce.
  * Not rendered in production builds.
  */
 export function DevPreviewPanel() {
@@ -27,7 +31,7 @@ export function DevPreviewPanel() {
   const { override, setOverride, systemReducedMotion } = useMotionPreference()
   const triggerRef = useRef(null)
   const panelRef = useRef(null)
-  const fills = FILL_BY_PATH[pathname]
+  const fills = FILL_BY_PATH[pathname]?.length ? FILL_BY_PATH[pathname] : null
 
   useEffect(() => {
     if (!open) return undefined
@@ -59,7 +63,7 @@ export function DevPreviewPanel() {
             className="absolute right-0 top-12 max-h-[70dvh] w-72 origin-top-right max-lg:bottom-12 max-lg:top-auto max-lg:origin-bottom-right overflow-y-auto rounded-lg bg-ink-800/95 p-2 shadow-e3 ring-1 ring-line-strong backdrop-blur-md focus:outline-none"
           >
             <div className="flex items-center justify-between px-2.5 pb-1 pt-1.5">
-              <p className="eyebrow text-warning">Dev · mock scenarios</p>
+              <p className="eyebrow text-warning">Dev · {AUTH_MODE === 'mock' ? 'mock auth' : 'live API'}</p>
               <button
                 type="button"
                 aria-label="Close preview panel"
@@ -81,7 +85,10 @@ export function DevPreviewPanel() {
                     key={scenario.label}
                     type="button"
                     className={itemClass}
-                    onClick={() => window.dispatchEvent(new CustomEvent('vt:fill', { detail: scenario.fill }))}
+                    onClick={() => {
+                      const detail = typeof scenario.fill === 'function' ? scenario.fill() : scenario.fill
+                      window.dispatchEvent(new CustomEvent('vt:fill', { detail }))
+                    }}
                   >
                     {scenario.label}
                   </button>
@@ -91,7 +98,7 @@ export function DevPreviewPanel() {
 
             <section className="mt-2 border-t border-line-subtle pt-2">
               <h2 className="px-2.5 pb-1 text-caption font-medium text-fg">Link states</h2>
-              {MOCK_SCENARIOS.links.map((link) => (
+              {SCENARIOS.links.map((link) => (
                 <Link key={link.to} to={link.to} className={itemClass} onClick={() => setOpen(false)}>
                   {link.label}
                 </Link>

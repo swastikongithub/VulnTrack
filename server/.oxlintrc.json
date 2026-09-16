@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "oxc",
+    "import",
+    "node",
+    "promise",
+    "vitest"
+  ],
+  "env": {
+    "node": true,
+    "es2024": true
+  },
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "promise/no-return-wrap": "error",
+    "no-console": [
+      "warn",
+      {
+        "allow": [
+          "error"
+        ]
+      }
+    ],
+    "no-undef": "error"
+  }
+}

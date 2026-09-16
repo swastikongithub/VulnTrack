@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Mail } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
+import { Navigate, useNavigate, useSearchParams } from 'react-router'
 import { Alert, Button, Checkbox, PasswordField, TextField, TextLink } from '@/design-system/components'
 import { duration, ease } from '@/design-system/motion/tokens'
 import { AUTH_ERROR, describeAuthError, login } from '@/services/auth/authService'
@@ -11,7 +11,7 @@ import { SessionHandoff } from '../components/SessionHandoff'
 import { Stagger, StaggerItem } from '../components/Stagger'
 import { useAuthForm } from '../hooks/useAuthForm'
 import { formatSeconds, useAuthScreen, useCountdown, usePreviewFill } from '../hooks/useAuthScreen'
-import { sessionActions, sessionStore } from '../sessionStore'
+import { sessionActions, sessionStore, useSessionStore } from '../sessionStore'
 import { validateEmail, validateLoginPassword } from '../validation/validators'
 
 const INITIAL = { email: '', password: '', remember: true }
@@ -22,6 +22,7 @@ export function LoginPage() {
   const [searchParams] = useSearchParams()
   // Snapshot at mount, then acknowledge — the notice shows once per sign-out
   const [signedOut] = useState(() => sessionStore.getState().signedOut)
+  const alreadySignedIn = useSessionStore((s) => s.status === 'authenticated')
   const [authError, setAuthError] = useState(null)
   const [phase, setPhase] = useState('form') // form | success | handoff
   const [retryIn, setRetryIn] = useCountdown()
@@ -43,8 +44,11 @@ export function LoginPage() {
         setAuthError(error)
         sceneActions.error()
         if (error.code === AUTH_ERROR.RATE_LIMITED) {
-          setLockedEmail(values.email.trim().toLowerCase())
+          // Account-scoped locks apply to that email; network-scoped limits apply to any email.
+          setLockedEmail(error.meta.scope === 'client' ? '*' : values.email.trim().toLowerCase())
           setRetryIn(error.meta.retryAfter ?? 30)
+        } else if (error.code === AUTH_ERROR.VALIDATION && form.applyServerErrors(error.meta.fields)) {
+          setAuthError(null)
         }
       }
     },
@@ -70,18 +74,17 @@ export function LoginPage() {
   }, [])
 
   const finishHandoff = useCallback(() => {
-    sessionActions.establish({
-      email: sessionRef.current.user.email,
-      persistent: sessionRef.current.persistent,
-      role: sessionRef.current.workspace.role,
-    })
+    sessionActions.establish(sessionRef.current)
     navigate('/session', { replace: true })
   }, [navigate])
 
   const { register, values } = form
-  const errorCopy = authError ? describeAuthError(authError) : null
-  // The pause applies to the throttled account, not to the form
-  const locked = retryIn > 0 && values.email.trim().toLowerCase() === lockedEmail
+  const errorCopy = authError ? describeAuthError(authError, 'login') : null
+  // Account-scoped pauses apply to the throttled email only, not to the whole form
+  const locked = retryIn > 0 && (lockedEmail === '*' || values.email.trim().toLowerCase() === lockedEmail)
+
+  // Visiting sign-in with a live session goes straight to it (not mid hand-off).
+  if (alreadySignedIn && phase === 'form') return <Navigate to="/session" replace />
 
   return (
     <AnimatePresence mode="wait" initial={false}>

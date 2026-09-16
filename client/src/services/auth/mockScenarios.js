@@ -46,3 +46,31 @@ export const MOCK_SCENARIOS = {
     { label: 'Verify — invalid link', to: '/verify-email?token=invalid' },
   ],
 }
+
+/**
+ * Helpers for the live API (default mode). Only states the real backend can
+ * produce on demand are listed; the rest are reached by using the flows.
+ */
+const uniqueEmail = () => `preview.${Date.now().toString(36)}@acme.io`
+
+export const API_SCENARIOS = {
+  login: [{ label: 'Wrong password (any email)', fill: { password: 'incorrect-password' } }],
+  signup: [
+    {
+      label: 'New workspace (fresh email)',
+      fill: () => ({
+        fullName: 'Ada Morgan',
+        email: uniqueEmail(),
+        workspace: 'Acme Security',
+        password: 'Lattice-Perimeter-42',
+        confirmPassword: 'Lattice-Perimeter-42',
+      }),
+    },
+  ],
+  forgot: [],
+  links: [
+    { label: 'Reset — invalid link', to: '/reset-password?token=invalid' },
+    { label: 'Verify — pending (inbox)', to: '/verify-email?email=ada%40acme.io' },
+    { label: 'Verify — invalid link', to: '/verify-email?token=invalid' },
+  ],
+}

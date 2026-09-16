@@ -14,6 +14,18 @@ import { validateEmail } from '../validation/validators'
 
 const RESEND_COOLDOWN = 60
 
+/**
+ * Verification tokens are single-use. Share one request per (token, attempt)
+ * so a re-run effect (React StrictMode, remounts) can't consume the token
+ * twice and report a valid link as invalid.
+ */
+const verifications = new Map()
+function verifyOnce(token, attempt) {
+  const key = `${attempt}:${token}`
+  if (!verifications.has(key)) verifications.set(key, verifyEmail({ token }))
+  return verifications.get(key)
+}
+
 const fade = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0, transition: { duration: duration.slow, ease: ease.enter } },
@@ -57,14 +69,20 @@ function ResendVerification({ knownEmail, initialCooldown = 0 }) {
       sceneActions.setStatus('idle')
       sceneActions.pulse()
     } catch (err) {
-      setError(err)
+      if (err.code === AUTH_ERROR.RATE_LIMITED && err.meta.retryAfter) {
+        // The button's countdown already explains a short cooldown; longer pauses also get an alert.
+        setCooldown(err.meta.retryAfter)
+        setError(err.meta.retryAfter > RESEND_COOLDOWN ? err : null)
+      } else {
+        setError(err)
+      }
       sceneActions.error()
     } finally {
       setSending(false)
     }
   }
 
-  const errorCopy = error ? describeAuthError(error) : null
+  const errorCopy = error ? describeAuthError(error, 'verification') : null
 
   return (
     <form noValidate onSubmit={send} aria-label="Resend verification email">
@@ -130,6 +148,7 @@ export function VerifyEmailPage() {
   // pending | verifying | success | expired | invalid | error
   const [view, setView] = useState(token ? 'verifying' : 'pending')
   const [attempt, setAttempt] = useState(0)
+  const [verifyError, setVerifyError] = useState(null)
 
   useEffect(() => {
     if (!token) {
@@ -139,7 +158,7 @@ export function VerifyEmailPage() {
     let cancelled = false
     setView('verifying')
     sceneActions.setStatus('loading')
-    verifyEmail({ token })
+    verifyOnce(token, attempt)
       .then(() => {
         if (cancelled) return
         setView('success')
@@ -147,6 +166,7 @@ export function VerifyEmailPage() {
       })
       .catch((error) => {
         if (cancelled) return
+        setVerifyError(error)
         setView(
           error.code === AUTH_ERROR.TOKEN_EXPIRED ? 'expired' : error.code === AUTH_ERROR.TOKEN_INVALID ? 'invalid' : 'error',
         )
@@ -270,7 +290,7 @@ export function VerifyEmailPage() {
               <StatusEmblem tone="failure" />
             </StaggerItem>
             <ScreenHeader focusOnMount eyebrow="Verification" tone="danger" title="We couldn't verify your email">
-              Something went wrong on our side. Your link may still be valid — try again.
+              {describeAuthError(verifyError, 'verification').body} Your link may still be valid — try again.
             </ScreenHeader>
             <StaggerItem className="grid gap-3">
               <Button fullWidth onClick={() => setAttempt((a) => a + 1)}>

@@ -11,13 +11,12 @@ import {
   TextField,
   TextLink,
 } from '@/design-system/components'
-import { describeAuthError, signup } from '@/services/auth/authService'
+import { AUTH_ERROR, describeAuthError, signup } from '@/services/auth/authService'
 import { sceneActions } from '../artwork/sceneStore'
 import { ScreenHeader } from '../components/ScreenHeader'
 import { Stagger, StaggerItem } from '../components/Stagger'
 import { useAuthForm } from '../hooks/useAuthForm'
 import { useAuthScreen, usePreviewFill } from '../hooks/useAuthScreen'
-import { sessionActions } from '../sessionStore'
 import {
   estimateStrength,
   passwordChecks,
@@ -63,12 +62,13 @@ export function SignupPage() {
       setAuthError(null)
       try {
         const result = await signup(values)
-        sessionActions.setPendingSignup(result)
         sceneActions.setStatus('success')
         setCreated(true)
         setTimeout(() => navigate(`/verify-email?email=${encodeURIComponent(result.email)}&new=1`), 900)
       } catch (error) {
-        setAuthError(error)
+        // Server-side field errors render in the fields themselves; everything else as an alert.
+        const shownInFields = error.code === AUTH_ERROR.VALIDATION && form.applyServerErrors(error.meta.fields)
+        setAuthError(shownInFields ? null : error)
         sceneActions.error()
       }
     },
@@ -87,7 +87,7 @@ export function SignupPage() {
   const context = { email: values.email, name: values.fullName }
   const checks = passwordChecks(values.password, context)
   const strength = estimateStrength(values.password, context)
-  const errorCopy = authError ? describeAuthError(authError) : null
+  const errorCopy = authError ? describeAuthError(authError, 'signup') : null
 
   return (
     <Stagger>

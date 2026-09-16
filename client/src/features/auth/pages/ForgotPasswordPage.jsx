@@ -3,7 +3,7 @@ import { Mail } from 'lucide-react'
 import { useState } from 'react'
 import { Alert, Button, TextField, TextLink } from '@/design-system/components'
 import { duration, ease } from '@/design-system/motion/tokens'
-import { describeAuthError, requestPasswordReset } from '@/services/auth/authService'
+import { AUTH_ERROR, describeAuthError, requestPasswordReset } from '@/services/auth/authService'
 import { sceneActions } from '../artwork/sceneStore'
 import { BackLink } from '../components/BackLink'
 import { ScreenHeader } from '../components/ScreenHeader'
@@ -56,13 +56,14 @@ export function ForgotPasswordPage() {
       setCooldown(RESEND_COOLDOWN)
     } catch (error) {
       setAuthError(error)
+      if (error.code === AUTH_ERROR.RATE_LIMITED && error.meta.retryAfter) setCooldown(error.meta.retryAfter)
       sceneActions.error()
     } finally {
       setResending(false)
     }
   }
 
-  const errorCopy = authError ? describeAuthError(authError) : null
+  const errorCopy = authError ? describeAuthError(authError, 'recovery') : null
 
   return (
     <AnimatePresence mode="wait" initial={false}>

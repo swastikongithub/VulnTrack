@@ -74,13 +74,20 @@ Geometry is seeded, so it's identical on every load and matches the static SVG f
 - **Reset password:** checks the link first (checking → form | expired | invalid); success states that other sessions were signed out, then goes to login with a confirmation.
 - **Verify email:** pending (inbox + resend cooldown) | verifying | success | expired / invalid (resend, asking for the email if unknown) | server error (retry).
 
-## Mock backend (this phase only)
+## Backend integration
 
-`client/src/services/auth/authService.js` implements the async contract with deterministic scenarios.
-In development, the **Preview states** panel fills forms, links to token states and overrides the
-motion preference.
+The screens run against the real API (see `docs/authentication/`). API outcomes map to the
+states above; the mapping table lives in `docs/authentication/README.md` → *Frontend integration*.
+Auth actions are paced to a minimum duration (~700 ms) so the loading choreography never flashes.
 
-| Input | Result |
+## Design-preview mock (development only)
+
+`VITE_AUTH_MODE=mock npm run dev` swaps in `services/auth/mockAuthService.js`, which reproduces
+every state deterministically without a backend. It is excluded from production builds. In
+development, the **Preview states** panel fills forms, links to link states and overrides the
+motion preference. In the default API mode it offers only states the live backend can produce.
+
+| Mock input | Result |
 |---|---|
 | any email + `incorrect-password` | Invalid credentials |
 | `locked@…` | Rate limited (30s) |
