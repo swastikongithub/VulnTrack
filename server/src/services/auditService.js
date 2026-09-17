@@ -9,14 +9,37 @@ export const AUDIT_ACTIONS = Object.freeze({
   VERIFICATION_RESEND: 'auth.email.verification_resend',
   PASSWORD_RESET_REQUEST: 'auth.password.reset_request',
   PASSWORD_RESET: 'auth.password.reset',
+
+  AUTHORIZATION_DENIED: 'authorization.denied',
+  ORGANIZATION_UPDATE: 'organization.update',
+  ORGANIZATION_SWITCH: 'organization.switch',
+  MEMBER_ROLE_CHANGE: 'organization.member.role_change',
+  MEMBER_REMOVE: 'organization.member.remove',
+  INVITATION_CREATE: 'organization.invitation.create',
+  INVITATION_RESEND: 'organization.invitation.resend',
+  INVITATION_REVOKE: 'organization.invitation.revoke',
+  INVITATION_ACCEPT: 'organization.invitation.accept',
 })
 
 /**
- * Creates an audit recorder. Recording never throws: an audit write failure is
+ * Creates an audit recorder. `email` is stored only as a keyed fingerprint. Recording never throws: an audit write failure is
  * logged loudly but must not turn a successful auth operation into an error.
  */
 export function createAuditService({ config, logger }) {
-  async function record(ctx, { action, outcome, userId = null, organizationId = null, email = null, reason = null }) {
+  async function record(
+    ctx,
+    {
+      action,
+      outcome,
+      userId = null,
+      organizationId = null,
+      email = null,
+      reason = null,
+      targetUserId = null,
+      invitationId = null,
+      metadata = undefined,
+    },
+  ) {
     try {
       await AuditLog.create({
         action,
@@ -25,6 +48,9 @@ export function createAuditService({ config, logger }) {
         organizationId,
         subjectFingerprint: email ? fingerprint(config.authSecret, email) : null,
         reason,
+        targetUserId,
+        invitationId,
+        metadata,
         ip: ctx?.ip,
         userAgent: ctx?.userAgent,
         requestId: ctx?.requestId,

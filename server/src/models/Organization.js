@@ -6,6 +6,13 @@ const organizationSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true, minlength: 2, maxlength: 60 },
     slug: { type: String, required: true, lowercase: true, trim: true, maxlength: 80, match: /^[a-z0-9-]+$/ },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    /**
+     * Bumped inside every transaction that changes roles or removes members. Not
+     * security state: it makes concurrent roster transactions write the same
+     * document, so MongoDB serializes them (one retries) and the "at least one
+     * owner" check can't be defeated by two owners demoting each other at once.
+     */
+    rosterVersion: { type: Number, default: 0 },
   },
   { timestamps: true },
 )

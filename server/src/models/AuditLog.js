@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 /**
- * Audit foundation — currently records authentication events only.
+ * Audit trail for authentication and organization (RBAC) events.
  * Append-only from the application's perspective: there is no update or
  * delete code path. Raw emails of unknown subjects are never stored; a keyed
  * fingerprint allows correlating repeated attempts.
@@ -14,6 +14,23 @@ const auditLogSchema = new mongoose.Schema(
     organizationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', default: null },
     subjectFingerprint: { type: String, maxlength: 64, default: null },
     reason: { type: String, maxlength: 64, default: null },
+    /** The member affected by an organization action (role change, removal). */
+    targetUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    /** The invitation affected by an invitation action. */
+    invitationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invitation', default: null },
+    /** Small, fixed-shape details. Never free-form request data, tokens or emails. */
+    metadata: {
+      type: new mongoose.Schema(
+        {
+          role: { type: String, maxlength: 32 },
+          previousRole: { type: String, maxlength: 32 },
+          permission: { type: String, maxlength: 64 },
+          fields: { type: [{ type: String, maxlength: 32 }], default: undefined },
+        },
+        { _id: false },
+      ),
+      default: undefined,
+    },
     ip: { type: String, maxlength: 64 },
     userAgent: { type: String, maxlength: 256 },
     requestId: { type: String, maxlength: 64 },

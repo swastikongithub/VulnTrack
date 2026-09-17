@@ -12,6 +12,9 @@ import { noStore, requestContext } from './middleware/requestContext.js'
 import { createRoutes } from './routes/index.js'
 import { createAuditService } from './services/auditService.js'
 import { createAuthService } from './services/authService.js'
+import { createInvitationService } from './services/invitationService.js'
+import { createMemberService } from './services/memberService.js'
+import { createOrganizationService } from './services/organizationService.js'
 import { createSessionService } from './services/sessionService.js'
 
 /**
@@ -22,6 +25,9 @@ export function createApp({ config, logger, mailer }) {
   const sessions = createSessionService({ config })
   const audit = createAuditService({ config, logger })
   const auth = createAuthService({ config, logger, mailer, audit, sessions })
+  const organizations = createOrganizationService({ audit })
+  const members = createMemberService({ audit })
+  const invitations = createInvitationService({ config, mailer, audit })
 
   const app = express()
   app.disable('x-powered-by')
@@ -50,7 +56,7 @@ export function createApp({ config, logger, mailer }) {
     cors({
       origin: (origin, callback) => callback(null, !origin || config.allowedOrigins.includes(origin)),
       credentials: true,
-      methods: ['GET', 'POST'],
+      methods: ['GET', 'POST', 'PATCH', 'DELETE'],
       allowedHeaders: ['Content-Type'],
       maxAge: 600,
     }),
@@ -65,7 +71,7 @@ export function createApp({ config, logger, mailer }) {
     originGuard(config),
     requireJsonBody,
     loadSession({ config, sessions }),
-    createRoutes({ config, auth, sessions }),
+    createRoutes({ config, auth, sessions, audit, organizations, members, invitations }),
   )
 
   app.use(notFound)

@@ -1,5 +1,6 @@
 export { AuditLog } from './AuditLog.js'
 export { AuthToken, TOKEN_PURPOSES } from './AuthToken.js'
+export { INVITATION_STATUS, Invitation } from './Invitation.js'
 export { Membership } from './Membership.js'
 export { Organization } from './Organization.js'
 export { RateLimit } from './RateLimit.js'

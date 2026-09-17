@@ -146,7 +146,7 @@ Rules:
 All components live in `design-system/components` (import from the barrel `@/design-system/components`).
 
 ### Button
-- **Variants:** `primary` (Ion fill, inner highlight, glow, hover sheen), `secondary` (raised surface + hairline), `ghost`.
+- **Variants:** `primary` (Ion fill, inner highlight, glow, hover sheen), `secondary` (raised surface + hairline), `ghost`, `danger` (destructive confirmations inside a Dialog only).
 - **Sizes:** `lg` 48px (default for forms), `md` 44px. Never smaller than 44px on touch layouts.
 - **One primary button per screen.**
 - **States:** `loading` → spinner + `loadingLabel`, `aria-disabled`, still focusable. `success` → check + `successLabel`, green fill. Labels crossfade in a fixed cell, so width never animates.
@@ -178,6 +178,12 @@ and keeps the inline errors visible. With a single error, focus goes to that fie
 Four segments filled with `scaleX` (no layout change) plus a text level. The requirement checklist
 uses icon + text + a screen-reader "met/not met" state. Policy: ≥12 characters and no name/email
 (NIST 800-63B); character variety is recommended, not required.
+
+### SelectField, Dialog (organization phase)
+- **SelectField:** native `<select>` with the TextField well, ring states and brackets. The `compact` variant (44px, `aria-label`) is for table rows.
+- **Dialog:** native `<dialog>` via `showModal()`. Focus starts on the least destructive action and returns to the opener; Escape and backdrop close it. Destructive confirmations use `Button variant="danger"`, the only place that variant appears.
+
+Page-specific rules: `pages/organization.md`.
 
 ### TextLink, IconButton, Spinner, Logo
 - **TextLink:** Ion, underline on hover; standalone links get `min-h-11`.

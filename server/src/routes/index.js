@@ -1,10 +1,9 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
-import { PERMISSIONS } from '../config/roles.js'
 import { createAuthController } from '../controllers/authController.js'
-import { organizationController } from '../controllers/organizationController.js'
+import { createOrganizationController } from '../controllers/organizationController.js'
 import { requireAuth } from '../middleware/authenticate.js'
-import { requireMembership, requirePermission } from '../middleware/authorize.js'
+import { createAuthorization } from '../middleware/authorize.js'
 import { validateBody } from '../middleware/validate.js'
 import {
   emailOnlySchema,
@@ -13,10 +12,13 @@ import {
   signupSchema,
   tokenSchema,
 } from '../validators/authValidators.js'
+import { registerOrganizationRoutes } from './organizationRoutes.js'
 
-export function createRoutes({ config, auth, sessions }) {
+export function createRoutes({ config, auth, sessions, audit, organizations, members, invitations }) {
   const router = Router()
   const authController = createAuthController({ config, auth, sessions })
+  const organizationController = createOrganizationController({ auth, organizations, members, invitations })
+  const authorization = createAuthorization({ audit })
 
   router.get('/health', (_req, res) => {
     const database = mongoose.connection.readyState === 1 ? 'up' : 'down'
@@ -34,16 +36,8 @@ export function createRoutes({ config, auth, sessions }) {
   router.post('/auth/password/reset/validate', validateBody(tokenSchema), authController.validateResetToken)
   router.post('/auth/password/reset', validateBody(resetPasswordSchema), authController.resetPassword)
 
-  // ── Tenancy foundation ──
-  router.get('/organizations', requireAuth, organizationController.listMine)
-  router.get('/organizations/:organizationId', requireAuth, requireMembership(), organizationController.getOne)
-  router.get(
-    '/organizations/:organizationId/members',
-    requireAuth,
-    requireMembership(),
-    requirePermission(PERMISSIONS.MEMBERS_READ),
-    organizationController.listMembers,
-  )
+  // ── Organizations, members, invitations ──
+  registerOrganizationRoutes(router, { controller: organizationController, authorization })
 
   return router
 }

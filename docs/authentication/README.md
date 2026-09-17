@@ -111,15 +111,12 @@ session and clears the cookie.
 4. One **transaction**: consume the token, update the password (and mark the email verified), revoke **all** sessions, invalidate remaining reset tokens.
 5. The login lockout is cleared and a "password changed" email is sent.
 
-## Tenancy & RBAC foundation
+## Tenancy & RBAC
 
-- Roles live on the membership, never globally on the user. The permission map is in
-  `config/roles.js`: `organization:read|update` and `members:read|manage`.
-- `requireMembership()` resolves `(organizationId from route, authenticated userId)`. Non-members
-  get **404**, so organization ids can't be probed. `requirePermission()` then checks the role.
-- Foundation endpoints: `GET /organizations`, `GET /organizations/:id`,
-  `GET /organizations/:id/members` (requires `members:read`).
-- Invitations, role changes and organization switching are deliberately **not** built (Organization + RBAC phase).
+Organizations, roles, permissions, invitations and organization switching are documented in
+[../organization/](../organization/README.md). In short: roles live on the membership; every
+organization route resolves `(organizationId | "current", authenticated user)` to an active
+membership (non-members get 404) and checks a permission from `config/roles.js`.
 
 ## Frontend integration
 

@@ -11,7 +11,7 @@ import { getSession } from '@/services/auth/authService'
  */
 export const sessionStore = createStore({
   status: 'unknown',
-  /** { user, organization, membership, memberships, session } from the API */
+  /** { user, organization, membership, permissions, memberships, session } from the API */
   session: null,
   signedOut: false,
 })
@@ -43,6 +43,10 @@ export const sessionActions = {
   },
   clear() {
     sessionStore.setState({ status: 'anonymous', session: null, signedOut: true })
+  },
+  /** The server reported the session is gone (expired or revoked elsewhere). */
+  expire() {
+    sessionStore.setState({ status: 'anonymous', session: null })
   },
   acknowledgeSignOut() {
     sessionStore.setState({ signedOut: false })

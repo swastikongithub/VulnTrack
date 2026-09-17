@@ -1,7 +1,7 @@
 # VulnTrack — API
 
 Node.js + Express + MongoDB (Mongoose). Current scope: authentication, sessions, email verification,
-password recovery and the organization/RBAC foundation.
+password recovery, organizations, RBAC, invitations and organization switching.
 
 ```bash
 docker compose up -d mongo     # from the repo root — MongoDB replica set on :27018
@@ -12,4 +12,5 @@ npm test                       # in-memory MongoDB replica set, no Docker needed
 npm run lint
 ```
 
-Docs: `docs/authentication/` — architecture, session strategy, API contract, environment, security.
+Docs: `docs/authentication/` (architecture, sessions, API, environment, security) and
+`docs/organization/` (organization model, RBAC, invitations, API, security).

@@ -94,10 +94,14 @@ describe('role-based permissions', () => {
 
   it('permission map follows the conceptual matrix', () => {
     expect(ROLE_VALUES).toEqual(['owner', 'admin', 'security_analyst', 'developer', 'viewer'])
-    expect(roleHasPermission('owner', 'members:manage')).toBe(true)
-    expect(roleHasPermission('admin', 'members:manage')).toBe(true)
+    // Phase 3 split the coarse members:manage permission into invite / update_role / remove.
+    for (const permission of ['members:invite', 'members:update_role', 'members:remove']) {
+      expect(roleHasPermission('owner', permission)).toBe(true)
+      expect(roleHasPermission('admin', permission)).toBe(true)
+      expect(roleHasPermission('security_analyst', permission)).toBe(false)
+    }
+    expect(roleHasPermission('owner', 'members:manage')).toBe(false)
     expect(roleHasPermission('security_analyst', 'members:read')).toBe(true)
-    expect(roleHasPermission('security_analyst', 'members:manage')).toBe(false)
     expect(roleHasPermission('developer', 'members:read')).toBe(false)
     expect(roleHasPermission('viewer', 'organization:update')).toBe(false)
     expect(roleHasPermission('unknown-role', 'organization:read')).toBe(false)

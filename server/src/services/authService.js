@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { ROLE_LABELS } from '../config/roles.js'
+import { permissionsForRole, ROLE_LABELS } from '../config/roles.js'
 import { RATE_LIMITS } from '../config/security.js'
 import { normalizeEmail, TOKEN_PURPOSES, User } from '../models/index.js'
 import { fingerprint } from '../utils/crypto.js'
@@ -44,7 +44,11 @@ export function createAuthService({ config, logger, mailer, audit, sessions }) {
     }
   }
 
-  /** Session payload returned by login and GET /auth/session. */
+  /**
+   * Session payload returned by login, GET /auth/session and organization switches.
+   * `permissions` describe the current organization only; the UI uses them to
+   * shape itself, and every action is still authorized again on the server.
+   */
   async function describeSession(user, session) {
     const memberships = await listMembershipsForUser(user._id)
     const active =
@@ -54,7 +58,10 @@ export function createAuthService({ config, logger, mailer, audit, sessions }) {
       user: serializeUser(user),
       organization: active ? serializeOrganization(active.organization) : null,
       membership: active ? { role: active.membership.role, roleLabel: ROLE_LABELS[active.membership.role] } : null,
-      memberships: memberships.map((m) => serializeMembership(m.membership, m.organization)),
+      permissions: active ? permissionsForRole(active.membership.role) : [],
+      memberships: memberships.map((m) =>
+        serializeMembership(m.membership, m.organization, { current: m === active }),
+      ),
       session: { persistent: session.persistent, expiresAt: session.expiresAt },
     }
   }

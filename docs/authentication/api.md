@@ -3,7 +3,7 @@
 Base path: `/api`. All request and response bodies are JSON.
 
 **Common rules**
-- State-changing requests (`POST`) must send `Content-Type: application/json` and an `Origin` (or `Referer`) matching an allowed web origin.
+- State-changing requests (`POST`, `PATCH`, `DELETE`) must send `Content-Type: application/json` and an `Origin` (or `Referer`) matching an allowed web origin.
 - The session travels in the `vt_session` cookie (`__Host-vt_session` in production). Browsers must use `credentials: 'include'`.
 - Every response carries `Cache-Control: no-store` and `X-Request-Id`.
 
@@ -34,6 +34,7 @@ relevant. Messages are safe for display but generic by design. The client choose
 | `FORBIDDEN` | 403 | Member lacks the permission |
 | `CSRF_REJECTED` | 403 | Missing or foreign Origin on a state-changing request |
 | `NOT_FOUND` | 404 | Unknown route, or an organization you are not a member of |
+| `ALREADY_MEMBER`, `INVITATION_EXISTS`, `INVITATION_EMAIL_MISMATCH`, `LAST_OWNER` | 409 / 403 | Organization codes, see [../organization/api.md](../organization/api.md) |
 | `TOKEN_EXPIRED` | 410 | Link expired |
 | `TOKEN_INVALID` | 400 | Link unknown, malformed, already used or superseded |
 | `PAYLOAD_TOO_LARGE` | 413 | Body over 10 KB |
@@ -136,15 +137,11 @@ Does **not** consume the token.
 
 ---
 
-## Tenancy foundation (authenticated)
+## Organizations, members, invitations
 
-| Endpoint | Guard | Response |
-|---|---|---|
-| `GET /organizations` | session | `{ memberships: [...] }` (caller's own only) |
-| `GET /organizations/:organizationId` | session + membership | `{ organization, membership }` |
-| `GET /organizations/:organizationId/members` | session + membership + `members:read` | `{ members: [{ userId, fullName, email, role, roleLabel, joinedAt }] }` |
-
-For non-members, a nonexistent organization and a malformed id all return the same `404 NOT_FOUND`.
+Moved to [../organization/api.md](../organization/api.md) (Organization & RBAC phase). The login
+and session payloads above gained two additive fields: a top-level `permissions` array for the
+current organization and `current: true|false` on each `memberships` entry.
 
 ## `GET /health`
 

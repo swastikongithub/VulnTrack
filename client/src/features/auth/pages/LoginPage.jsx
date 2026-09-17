@@ -11,6 +11,7 @@ import { SessionHandoff } from '../components/SessionHandoff'
 import { Stagger, StaggerItem } from '../components/Stagger'
 import { useAuthForm } from '../hooks/useAuthForm'
 import { formatSeconds, useAuthScreen, useCountdown, usePreviewFill } from '../hooks/useAuthScreen'
+import { safeNextPath } from '@/lib/safeRedirect'
 import { sessionActions, sessionStore, useSessionStore } from '../sessionStore'
 import { validateEmail, validateLoginPassword } from '../validation/validators'
 
@@ -29,6 +30,8 @@ export function LoginPage() {
   const [lockedEmail, setLockedEmail] = useState(null)
   const sessionRef = useRef(null)
   const passwordChanged = searchParams.get('reset') === 'success'
+  // Where to go after signing in (allowlisted in-app paths only, e.g. an invitation link).
+  const destination = safeNextPath(searchParams.get('next')) ?? '/session'
 
   const form = useAuthForm({
     initialValues: INITIAL,
@@ -75,8 +78,8 @@ export function LoginPage() {
 
   const finishHandoff = useCallback(() => {
     sessionActions.establish(sessionRef.current)
-    navigate('/session', { replace: true })
-  }, [navigate])
+    navigate(destination, { replace: true })
+  }, [navigate, destination])
 
   const { register, values } = form
   const errorCopy = authError ? describeAuthError(authError, 'login') : null
@@ -84,7 +87,7 @@ export function LoginPage() {
   const locked = retryIn > 0 && (lockedEmail === '*' || values.email.trim().toLowerCase() === lockedEmail)
 
   // Visiting sign-in with a live session goes straight to it (not mid hand-off).
-  if (alreadySignedIn && phase === 'form') return <Navigate to="/session" replace />
+  if (alreadySignedIn && phase === 'form') return <Navigate to={destination} replace />
 
   return (
     <AnimatePresence mode="wait" initial={false}>

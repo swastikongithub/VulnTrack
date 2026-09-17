@@ -1,5 +1,5 @@
 import { AnimatePresence } from 'framer-motion'
-import { LogOut } from 'lucide-react'
+import { ArrowRight, LogOut } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router'
 import { Alert, Button } from '@/design-system/components'
@@ -64,7 +64,7 @@ function SessionReady({ session }) {
         <StatusEmblem tone="success" />
       </StaggerItem>
       <ScreenHeader ref={headingRef} eyebrow="Session active" tone="success" title="You're signed in">
-        Your session is established. The workspace console is not part of this build yet.
+        Your session is established. Manage your organization's members, invitations and settings.
       </ScreenHeader>
 
       <AnimatePresence initial={false}>
@@ -86,7 +86,15 @@ function SessionReady({ session }) {
         ))}
       </StaggerItem>
 
-      <StaggerItem className="mt-6">
+      {session.organization && (
+        <StaggerItem className="mt-6">
+          <Button fullWidth trailingIcon={<ArrowRight aria-hidden="true" size={17} />} onClick={() => navigate('/organization/members')}>
+            Open organization
+          </Button>
+        </StaggerItem>
+      )}
+
+      <StaggerItem className="mt-3">
         <Button
           variant="secondary"
           fullWidth

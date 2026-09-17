@@ -5,7 +5,7 @@ import { afterAll, beforeAll, beforeEach, expect, inject } from 'vitest'
 import { createApp } from '../../src/app.js'
 import { connectDatabase, disconnectDatabase } from '../../src/config/database.js'
 import { loadConfig } from '../../src/config/env.js'
-import '../../src/models/index.js'
+import { Membership, User } from '../../src/models/index.js'
 import { createEmailService } from '../../src/services/emailService.js'
 import { createLogger } from '../../src/utils/logger.js'
 
@@ -53,28 +53,21 @@ export function useTestApp(overrides = {}) {
 
 /** Supertest request with the browser Origin header (required by the CSRF guard). */
 export function api(app) {
-  const wrap = (agent) => ({
-    get: (url) => agent.get(url),
-    post: (url, body) => {
-      const req = agent.post(url).set('Origin', ORIGIN)
-      return body === undefined ? req : req.send(body)
-    },
-    agent,
-  })
-  return wrap(request(app))
+  return withMethods(request(app))
+}
+
+/** get / post / patch / delete helpers; state-changing verbs carry the allowed Origin. */
+function withMethods(agent) {
+  const send = (method) => (url, body) => {
+    const req = agent[method](url).set('Origin', ORIGIN)
+    return body === undefined ? req : req.send(body)
+  }
+  return { get: (url) => agent.get(url), post: send('post'), patch: send('patch'), delete: send('delete'), agent }
 }
 
 /** Cookie-keeping client (like a browser). */
 export function browser(app) {
-  const agent = request.agent(app)
-  return {
-    get: (url) => agent.get(url),
-    post: (url, body) => {
-      const req = agent.post(url).set('Origin', ORIGIN)
-      return body === undefined ? req : req.send(body)
-    },
-    agent,
-  }
+  return withMethods(request.agent(app))
 }
 
 export function signupPayload(overrides = {}) {
@@ -115,4 +108,22 @@ export async function signedInBrowser(ctx, overrides = {}) {
   const res = await client.post('/api/auth/login', { email: user.email, password: user.password })
   expect(res.status).toBe(200)
   return { user, client, session: res.body }
+}
+
+export async function userIdOf(email) {
+  return (await User.findOne({ emailNormalized: email.toLowerCase() }).lean())._id
+}
+
+/**
+ * Fixture shortcut: a signed-in user who is also a member of `organizationId`
+ * with `role` (the invitation flow itself is covered in invitations.test.js).
+ * The session is switched to that organization.
+ */
+export async function memberOf(ctx, organizationId, role, overrides = {}) {
+  const signedIn = await signedInBrowser(ctx, overrides)
+  const userId = await userIdOf(signedIn.user.email)
+  await Membership.create({ organizationId, userId, role })
+  const switched = await signedIn.client.post('/api/organizations/switch', { organizationId: String(organizationId) })
+  expect(switched.status).toBe(200)
+  return { ...signedIn, userId: String(userId), session: switched.body }
 }

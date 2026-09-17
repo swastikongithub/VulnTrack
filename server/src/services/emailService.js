@@ -87,6 +87,24 @@ export const emailTemplates = {
     }
   },
 
+  invitation(config, { to, organizationName, inviterName, roleLabel, token, expiresAt }) {
+    const url = link(config, '/invite', token)
+    const days = Math.max(1, Math.round((new Date(expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)))
+    return {
+      to,
+      subject: `${inviterName} invited you to ${organizationName} on VulnTrack`,
+      text: `Hi,
+
+${inviterName} invited you to join ${organizationName} on VulnTrack as ${roleLabel}.
+
+Review and accept the invitation:
+
+${url}
+
+Sign in (or create an account) with this email address to accept. The link expires in ${days} days and can be used once.${footer}`,
+    }
+  },
+
   signupExistingAccount(config, { to, fullName }) {
     return {
       to,

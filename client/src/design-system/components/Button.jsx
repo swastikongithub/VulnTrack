@@ -18,6 +18,9 @@ const variants = {
   secondary:
     'bg-surface-raised text-fg shadow-e1 ring-1 ring-inset ring-line hover:bg-surface-hover hover:ring-line-strong',
   ghost: 'text-fg-muted hover:bg-surface-hover hover:text-fg',
+  /** Destructive confirmations only (inside a Dialog), never as a screen's main action. */
+  danger:
+    'bg-danger text-ink-950 shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_0_0_1px_rgb(255_115_133/0.45)] hover:bg-danger/90 active:bg-danger/80',
 }
 
 const sizes = {

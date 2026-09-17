@@ -19,6 +19,9 @@ export const ARGON2_OPTIONS = Object.freeze({
 export const TOKEN_POLICY = Object.freeze({
   email_verification: { ttlMs: 24 * 60 * 60 * 1000 },
   password_reset: { ttlMs: 30 * 60 * 1000 },
+  invitation: { ttlMs: 7 * 24 * 60 * 60 * 1000 },
+  /** Invitation records (any status) are purged this long after they expire. */
+  invitationRetainAfterExpiryMs: 30 * 24 * 60 * 60 * 1000,
   /** Consumed/expired token records are kept briefly so an old link reports "expired" rather than "invalid". */
   retainAfterExpiryMs: 7 * 24 * 60 * 60 * 1000,
 })
@@ -40,6 +43,14 @@ export const RATE_LIMITS = Object.freeze({
   verificationResendAccountInterval: { limit: 1, windowMs: MINUTE },
   verificationResendAccountHourly: { limit: 5, windowMs: HOUR },
   tokenIp: { limit: 30, windowMs: 15 * MINUTE },
+  /** Per organization: caps invitation email volume from a compromised or careless admin. */
+  invitationCreateOrganization: { limit: 50, windowMs: HOUR },
+  /** Per invitation. */
+  invitationResendInterval: { limit: 1, windowMs: MINUTE },
+  invitationResendHourly: { limit: 5, windowMs: HOUR },
 })
+
+/** Upper bound on members returned by one listing (pagination arrives with larger teams). */
+export const MEMBER_LIST_LIMIT = 500
 
 export const REQUEST_BODY_LIMIT = '10kb'

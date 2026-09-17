@@ -23,6 +23,7 @@ const DEPTH = {
   '/reset-password': 2,
   '/verify-email': 2,
   '/session': 3,
+  '/invite': 2,
 }
 
 const screen = {
