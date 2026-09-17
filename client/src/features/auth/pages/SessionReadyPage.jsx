@@ -64,7 +64,7 @@ function SessionReady({ session }) {
         <StatusEmblem tone="success" />
       </StaggerItem>
       <ScreenHeader ref={headingRef} eyebrow="Session active" tone="success" title="You're signed in">
-        Your session is established. Manage your organization's members, invitations and settings.
+        Your session is established. Open your organization's asset inventory, members and settings.
       </ScreenHeader>
 
       <AnimatePresence initial={false}>
@@ -88,7 +88,7 @@ function SessionReady({ session }) {
 
       {session.organization && (
         <StaggerItem className="mt-6">
-          <Button fullWidth trailingIcon={<ArrowRight aria-hidden="true" size={17} />} onClick={() => navigate('/organization/members')}>
+          <Button fullWidth trailingIcon={<ArrowRight aria-hidden="true" size={17} />} onClick={() => navigate('/organization/assets')}>
             Open organization
           </Button>
         </StaggerItem>

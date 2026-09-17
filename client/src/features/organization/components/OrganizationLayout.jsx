@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { LogOut, Settings2, Users } from 'lucide-react'
+import { Boxes, LogOut, Settings2, Users } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { Link, Navigate, NavLink, useLocation, useNavigate, useOutlet } from 'react-router'
+import { Link, Navigate, NavLink, ScrollRestoration, useLocation, useNavigate, useOutlet } from 'react-router'
 import { Alert, Button, IconButton, Logo, Spinner } from '@/design-system/components'
 import { duration, ease, spring, travel } from '@/design-system/motion/tokens'
 import { cn } from '@/lib/cn'
@@ -15,6 +15,7 @@ import { OrganizationSwitcher } from './OrganizationSwitcher'
 import { PerimeterMotif } from './PerimeterMotif'
 
 const NAV = [
+  { to: '/organization/assets', label: 'Assets', icon: Boxes },
   { to: '/organization/members', label: 'Members', icon: Users },
   { to: '/organization/settings', label: 'Settings', icon: Settings2 },
 ]
@@ -79,6 +80,8 @@ function OrganizationShell({ session }) {
 
   return (
     <OrganizationContext.Provider value={context}>
+      {/* New pages start at the top; back/forward restore the previous position. Filter changes (search params) keep it. */}
+      <ScrollRestoration getKey={(location) => location.pathname} />
       <a
         href="#organization-content"
         className="sr-only-focusable fixed left-4 top-4 z-[var(--z-skiplink)] rounded-md bg-ion px-4 py-2 text-label text-on-ion"
@@ -172,7 +175,7 @@ function OrganizationNav() {
         <span className="h-px w-5 bg-current opacity-70" />
         Workspace
       </p>
-      <ul className="relative grid grid-cols-2 gap-1 rounded-md bg-ink-900/80 p-1 ring-1 ring-inset ring-line lg:sticky lg:top-24 lg:grid-cols-1 lg:bg-transparent lg:p-0 lg:ring-0">
+      <ul className="relative grid grid-cols-3 gap-1 rounded-md bg-ink-900/80 p-1 ring-1 ring-inset ring-line lg:sticky lg:top-24 lg:grid-cols-1 lg:bg-transparent lg:p-0 lg:ring-0">
         {NAV.map((item) => (
           <li key={item.to} className="relative">
             <NavLink

@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
+import { createAssetController } from '../controllers/assetController.js'
 import { createAuthController } from '../controllers/authController.js'
 import { createOrganizationController } from '../controllers/organizationController.js'
 import { requireAuth } from '../middleware/authenticate.js'
@@ -12,12 +13,14 @@ import {
   signupSchema,
   tokenSchema,
 } from '../validators/authValidators.js'
+import { registerAssetRoutes } from './assetRoutes.js'
 import { registerOrganizationRoutes } from './organizationRoutes.js'
 
-export function createRoutes({ config, auth, sessions, audit, organizations, members, invitations }) {
+export function createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets }) {
   const router = Router()
   const authController = createAuthController({ config, auth, sessions })
   const organizationController = createOrganizationController({ auth, organizations, members, invitations })
+  const assetController = createAssetController({ assets })
   const authorization = createAuthorization({ audit })
 
   router.get('/health', (_req, res) => {
@@ -38,6 +41,9 @@ export function createRoutes({ config, auth, sessions, audit, organizations, mem
 
   // ── Organizations, members, invitations ──
   registerOrganizationRoutes(router, { controller: organizationController, authorization })
+
+  // ── Asset inventory ──
+  registerAssetRoutes(router, { controller: assetController, authorization })
 
   return router
 }

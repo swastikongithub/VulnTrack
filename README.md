@@ -4,6 +4,7 @@ VulnTrack is a cybersecurity vulnerability management platform for organizations
 ## Current status
 
 - **Authentication:** complete end to end. The animated authentication UI (`client/`) runs on the real authentication API (`server/`) with MongoDB.
+- **Asset management:** organization-scoped asset inventory (types, environment, criticality, exposure, lifecycle, typed identifiers, tags, ownership) with server-side search, filters and pagination; archive, restore and delete; audit (`/organization/assets`).
 - **Organizations & RBAC:** multi-tenant organizations with a central permission model, owner/admin hierarchy, invitations, organization switching, and the members and settings screens (`/organization/*`, `/invite`).
 
 ## Run locally
@@ -26,3 +27,4 @@ In development, verification and password-reset emails are printed to the API te
 - `docs/design-system/` — visual & interaction system
 - `docs/authentication/` — auth architecture, session strategy, API, environment, security
 - `docs/organization/` — organization model, RBAC matrix, invitations, API, security
+- `docs/assets/` — asset model, lifecycle and identifiers, API, security

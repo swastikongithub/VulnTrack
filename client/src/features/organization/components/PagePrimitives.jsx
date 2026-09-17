@@ -44,10 +44,17 @@ export const PageHeader = forwardRef(function PageHeader({ eyebrow, title, child
 
 /** Instrument-style readouts: real counts only, never decorative telemetry. */
 export function Readouts({ items, className }) {
+  const four = items.length === 4
   return (
-    <dl className={cn('grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-line-subtle ring-1 ring-line sm:grid-cols-3', className)}>
+    <dl
+      className={cn(
+        'grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-line-subtle ring-1 ring-line',
+        four ? 'md:grid-cols-4' : 'sm:grid-cols-3',
+        className,
+      )}
+    >
       {items.map((item) => (
-        <div key={item.label} className="relative bg-surface/95 px-4 py-3.5 last:col-span-2 sm:last:col-span-1">
+        <div key={item.label} className={cn('relative bg-surface/95 px-4 py-3.5', !four && 'last:col-span-2 sm:last:col-span-1')}>
           <dt className="eyebrow text-fg-subtle">{item.label}</dt>
           <dd className="mt-1.5 truncate text-title-2 tabular text-fg">{item.value}</dd>
         </div>

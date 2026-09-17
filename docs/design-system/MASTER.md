@@ -179,11 +179,12 @@ Four segments filled with `scaleX` (no layout change) plus a text level. The req
 uses icon + text + a screen-reader "met/not met" state. Policy: ≥12 characters and no name/email
 (NIST 800-63B); character variety is recommended, not required.
 
-### SelectField, Dialog (organization phase)
+### SelectField, TextAreaField, Dialog (organization and asset phases)
+- **TextAreaField:** a multi-line TextField with the same well, ring and brackets, a reserved message row, and a character counter when `maxLength` is set.
 - **SelectField:** native `<select>` with the TextField well, ring states and brackets. The `compact` variant (44px, `aria-label`) is for table rows.
 - **Dialog:** native `<dialog>` via `showModal()`. Focus starts on the least destructive action and returns to the opener; Escape and backdrop close it. Destructive confirmations use `Button variant="danger"`, the only place that variant appears.
 
-Page-specific rules: `pages/organization.md`.
+Page-specific rules: `pages/organization.md`, `pages/assets.md`.
 
 ### TextLink, IconButton, Spinner, Logo
 - **TextLink:** Ion, underline on hover; standalone links get `min-h-11`.

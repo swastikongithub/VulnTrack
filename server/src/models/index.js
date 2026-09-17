@@ -1,3 +1,4 @@
+export { Asset, ASSET_NAME_COLLATION } from './Asset.js'
 export { AuditLog } from './AuditLog.js'
 export { AuthToken, TOKEN_PURPOSES } from './AuthToken.js'
 export { INVITATION_STATUS, Invitation } from './Invitation.js'

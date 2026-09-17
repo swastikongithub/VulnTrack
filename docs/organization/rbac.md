@@ -34,10 +34,10 @@ Naming follows the existing `resource:action` convention (`organization.read` in
 | `members:invite` | ✔ | ✔ | | | | invitations: list, create, resend, revoke |
 | `members:update_role` | ✔ | ✔ | | | | `PATCH …/members/:userId` |
 | `members:remove` | ✔ | ✔ | | | | `DELETE …/members/:userId` |
-| `assets:read` | ✔ | ✔ | ✔ | ✔ | ✔ | *reserved* |
-| `assets:create` | ✔ | ✔ | ✔ | | | *reserved* |
-| `assets:update` | ✔ | ✔ | ✔ | | | *reserved* |
-| `assets:delete` | ✔ | ✔ | | | | *reserved* |
+| `assets:read` | ✔ | ✔ | ✔ | ✔ | ✔ | asset list, summary, detail (Phase 4) |
+| `assets:create` | ✔ | ✔ | ✔ | | | create asset |
+| `assets:update` | ✔ | ✔ | ✔ | | | edit asset fields and lifecycle |
+| `assets:delete` | ✔ | ✔ | | | | archive, restore, permanently delete |
 | `vulnerabilities:read` | ✔ | ✔ | ✔ | ✔ | ✔ | *reserved* |
 | `findings:read` | ✔ | ✔ | ✔ | ✔ | ✔ | *reserved* |
 | `findings:create` | ✔ | ✔ | ✔ | | | *reserved* |
@@ -53,7 +53,7 @@ Decisions behind the matrix (refining master plan §5.10):
 - **Developers and viewers can't list members.** The plan gives them "None" for Users.
 - **Developers don't get `findings:update`.** The plan says developers update *assigned* findings. A
   blanket grant would be too broad, so the findings phase adds a row-scoped permission instead.
-- **Reserved permissions have no endpoints.** They exist so the matrix is reviewed as a whole.
+- **Reserved permissions have no endpoints.** They exist so the matrix is reviewed as a whole. The `assets:*` permissions became active in Phase 4 without changes to the grants ([../assets/security.md](../assets/security.md)).
 - The module throws at startup if a permission lacks a grant entry or a grant names an unknown role
   or permission.
 

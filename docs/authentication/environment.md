@@ -60,6 +60,10 @@ npm run dev                   # http://localhost:5173 (proxies /api to :4000)
 With `EMAIL_TRANSPORT=log`, verification and reset links appear in the API's terminal. To use
 Mailpit instead, set `EMAIL_TRANSPORT=smtp`, `SMTP_HOST=127.0.0.1` and `SMTP_PORT=1025`.
 
+**Two local stacks at once:** browsers share cookies across ports on `localhost`, so two VulnTrack
+instances (e.g. web `:5173` and `:5174`) overwrite and clear each other's session cookie. Serve the
+second one on `127.0.0.1` (`vite --host 127.0.0.1`, `APP_ORIGIN=http://127.0.0.1:<port>`).
+
 Host port 27018 avoids clashing with a locally installed MongoDB on 27017. Override it with
 `MONGO_HOST_PORT` and change `MONGODB_URI` to match.
 

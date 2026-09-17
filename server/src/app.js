@@ -10,6 +10,7 @@ import { originGuard, requireJsonBody } from './middleware/csrf.js'
 import { errorHandler, notFound } from './middleware/errorHandler.js'
 import { noStore, requestContext } from './middleware/requestContext.js'
 import { createRoutes } from './routes/index.js'
+import { createAssetService } from './services/assetService.js'
 import { createAuditService } from './services/auditService.js'
 import { createAuthService } from './services/authService.js'
 import { createInvitationService } from './services/invitationService.js'
@@ -28,6 +29,7 @@ export function createApp({ config, logger, mailer }) {
   const organizations = createOrganizationService({ audit })
   const members = createMemberService({ audit })
   const invitations = createInvitationService({ config, mailer, audit })
+  const assets = createAssetService({ audit })
 
   const app = express()
   app.disable('x-powered-by')
@@ -71,7 +73,7 @@ export function createApp({ config, logger, mailer }) {
     originGuard(config),
     requireJsonBody,
     loadSession({ config, sessions }),
-    createRoutes({ config, auth, sessions, audit, organizations, members, invitations }),
+    createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets }),
   )
 
   app.use(notFound)

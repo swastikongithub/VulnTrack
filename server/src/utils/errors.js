@@ -19,6 +19,11 @@ export const ERROR_CODES = Object.freeze({
   INVITATION_EXISTS: 'INVITATION_EXISTS',
   INVITATION_EMAIL_MISMATCH: 'INVITATION_EMAIL_MISMATCH',
   LAST_OWNER: 'LAST_OWNER',
+  ASSET_IDENTIFIER_EXISTS: 'ASSET_IDENTIFIER_EXISTS',
+  ASSET_CONFLICT: 'ASSET_CONFLICT',
+  ASSET_ARCHIVED: 'ASSET_ARCHIVED',
+  ASSET_NOT_ARCHIVED: 'ASSET_NOT_ARCHIVED',
+  ASSET_LIMIT_REACHED: 'ASSET_LIMIT_REACHED',
   SERVER: 'SERVER',
 })
 
@@ -56,6 +61,15 @@ export const errors = {
     new AppError(409, ERROR_CODES.INVITATION_EXISTS, 'A pending invitation already exists for this email.'),
   invitationEmailMismatch: () =>
     new AppError(403, ERROR_CODES.INVITATION_EMAIL_MISMATCH, 'This invitation was sent to a different email address.'),
+  assetIdentifierExists: (fields) =>
+    new AppError(409, ERROR_CODES.ASSET_IDENTIFIER_EXISTS, 'Another asset already uses this identifier.', { fields }),
+  assetConflict: () =>
+    new AppError(409, ERROR_CODES.ASSET_CONFLICT, 'This asset was changed by someone else. Reload it and try again.'),
+  assetArchived: () => new AppError(409, ERROR_CODES.ASSET_ARCHIVED, 'Archived assets are read-only. Restore it first.'),
+  assetNotArchived: () =>
+    new AppError(409, ERROR_CODES.ASSET_NOT_ARCHIVED, 'Only archived assets can be deleted. Archive it first.'),
+  assetLimitReached: () =>
+    new AppError(409, ERROR_CODES.ASSET_LIMIT_REACHED, 'This organization has reached its asset limit.'),
   lastOwner: () =>
     new AppError(409, ERROR_CODES.LAST_OWNER, 'An organization must keep at least one owner.'),
 }

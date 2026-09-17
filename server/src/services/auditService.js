@@ -19,6 +19,12 @@ export const AUDIT_ACTIONS = Object.freeze({
   INVITATION_RESEND: 'organization.invitation.resend',
   INVITATION_REVOKE: 'organization.invitation.revoke',
   INVITATION_ACCEPT: 'organization.invitation.accept',
+
+  ASSET_CREATE: 'asset.create',
+  ASSET_UPDATE: 'asset.update',
+  ASSET_ARCHIVE: 'asset.archive',
+  ASSET_RESTORE: 'asset.restore',
+  ASSET_DELETE: 'asset.delete',
 })
 
 /**
@@ -37,6 +43,8 @@ export function createAuditService({ config, logger }) {
       reason = null,
       targetUserId = null,
       invitationId = null,
+      resourceType = null,
+      resourceId = null,
       metadata = undefined,
     },
   ) {
@@ -50,6 +58,8 @@ export function createAuditService({ config, logger }) {
         reason,
         targetUserId,
         invitationId,
+        resourceType,
+        resourceId,
         metadata,
         ip: ctx?.ip,
         userAgent: ctx?.userAgent,

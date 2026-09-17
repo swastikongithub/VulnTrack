@@ -53,6 +53,7 @@ models/Invitation.js       new; Membership unchanged; Organization.rosterVersion
 
 | Route | Screen | Layout |
 |---|---|---|
+| `/organization/assets/**` | asset inventory (Phase 4, see `docs/assets/`) | `OrganizationLayout` |
 | `/organization/members` | members, invite form, pending invitations | `OrganizationLayout` (lazy-loaded) |
 | `/organization/settings` | name, record details, "what your role allows" | `OrganizationLayout` |
 | `/invite?token=…` | invitation check → sign in / accept / mismatch / expired / invalid | `AuthLayout` (Perimeter artwork) |

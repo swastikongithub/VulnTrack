@@ -48,6 +48,8 @@ export const RATE_LIMITS = Object.freeze({
   /** Per invitation. */
   invitationResendInterval: { limit: 1, windowMs: MINUTE },
   invitationResendHourly: { limit: 5, windowMs: HOUR },
+  /** Per organization: asset creates, updates, archives, restores and deletes combined. */
+  assetWriteOrganization: { limit: 600, windowMs: HOUR },
 })
 
 /** Upper bound on members returned by one listing (pagination arrives with larger teams). */

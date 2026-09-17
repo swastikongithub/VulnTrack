@@ -1,6 +1,6 @@
 # Page overrides — Organization area
 
-Extends `../MASTER.md` for `/organization/members`, `/organization/settings` and the invitation link
+Extends `../MASTER.md` for the organization shell (Assets, Members and Settings; asset pages: `assets.md`), `/organization/members`, `/organization/settings` and the invitation link
 `/invite` (which lives in the auth layout and follows `auth.md`).
 
 ## Shell

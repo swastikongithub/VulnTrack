@@ -2,7 +2,7 @@
   "name": "vulntrack-server",
   "private": true,
   "version": "0.1.0",
-  "description": "VulnTrack API — authentication, sessions, organizations and RBAC",
+  "description": "VulnTrack API — authentication, organizations, RBAC and asset inventory",
   "type": "module",
   "main": "src/server.js",
   "engines": {

@@ -208,7 +208,7 @@ function ReadyInvitation({ token, invitation, headingRef, onLinkProblem }) {
           You joined as {invitation.roleLabel}. It's now your current organization.
         </ScreenHeader>
         <StaggerItem>
-          <Button fullWidth trailingIcon={<ArrowRight aria-hidden="true" size={17} />} onClick={() => navigate('/organization/members')}>
+          <Button fullWidth trailingIcon={<ArrowRight aria-hidden="true" size={17} />} onClick={() => navigate('/organization')}>
             Open organization
           </Button>
         </StaggerItem>
@@ -266,7 +266,7 @@ function ReadyInvitation({ token, invitation, headingRef, onLinkProblem }) {
           <Alert tone="info" title="You're already a member" className="mb-3">
             This account already belongs to {invitation.organization.name}.
           </Alert>
-          <Button fullWidth trailingIcon={<ArrowRight aria-hidden="true" size={17} />} onClick={() => navigate('/organization/members')}>
+          <Button fullWidth trailingIcon={<ArrowRight aria-hidden="true" size={17} />} onClick={() => navigate('/organization')}>
             Open organization
           </Button>
         </StaggerItem>

@@ -33,7 +33,23 @@ export const router = createBrowserRouter([
     hydrateFallbackElement: <RouteLoading />,
     lazy: async () => ({ Component: (await import('@/features/organization/components/OrganizationLayout')).OrganizationLayout }),
     children: [
-      { index: true, element: <Navigate to="/organization/members" replace /> },
+      { index: true, element: <Navigate to="/organization/assets" replace /> },
+      { path: 'assets', lazy: async () => ({ Component: (await import('@/features/assets/pages/AssetInventoryPage')).AssetInventoryPage }) },
+      {
+        path: 'assets/new',
+        lazy: async () => {
+          const { AssetFormPage } = await import('@/features/assets/pages/AssetFormPage')
+          return { Component: () => <AssetFormPage mode="create" /> }
+        },
+      },
+      { path: 'assets/:assetId', lazy: async () => ({ Component: (await import('@/features/assets/pages/AssetDetailPage')).AssetDetailPage }) },
+      {
+        path: 'assets/:assetId/edit',
+        lazy: async () => {
+          const { AssetFormPage } = await import('@/features/assets/pages/AssetFormPage')
+          return { Component: () => <AssetFormPage mode="edit" /> }
+        },
+      },
       { path: 'members', lazy: async () => ({ Component: (await import('@/features/organization/pages/MembersPage')).MembersPage }) },
       { path: 'settings', lazy: async () => ({ Component: (await import('@/features/organization/pages/SettingsPage')).SettingsPage }) },
     ],
