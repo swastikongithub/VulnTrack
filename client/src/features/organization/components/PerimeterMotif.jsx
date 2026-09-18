@@ -13,9 +13,9 @@ const NODES = [
   { angle: 250, r: 180, tone: 'var(--color-fg-subtle)' },
 ]
 
-export function PerimeterMotif({ className }) {
+export function PerimeterMotif({ className, style }) {
   return (
-    <svg viewBox="-320 -320 640 640" className={className} fill="none">
+    <svg viewBox="-320 -320 640 640" className={className} style={style} fill="none">
       <circle r="250" stroke="var(--color-line)" strokeWidth="1" />
       <circle r="180" stroke="var(--color-line-subtle)" strokeWidth="1" strokeDasharray="2 6" />
       <circle r="110" stroke="var(--color-line-subtle)" strokeWidth="1" />

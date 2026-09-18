@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { useEffect } from 'react'
 import { useMotionPreference } from './MotionPreferenceProvider'
+import { setSmoothScrollInstance } from './smoothScrollInstance'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -25,6 +26,7 @@ export function SmoothScroll() {
       syncTouch: false,
     })
 
+    setSmoothScrollInstance(lenis)
     lenis.on('scroll', ScrollTrigger.update)
     const tick = (time) => lenis.raf(time * 1000)
     gsap.ticker.add(tick)
@@ -32,6 +34,7 @@ export function SmoothScroll() {
 
     return () => {
       gsap.ticker.remove(tick)
+      setSmoothScrollInstance(null)
       lenis.destroy()
     }
   }, [reducedMotion])

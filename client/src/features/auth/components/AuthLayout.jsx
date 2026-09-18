@@ -84,8 +84,8 @@ export function AuthLayout() {
         >
           <header className="pointer-events-auto absolute inset-x-0 top-0 flex items-center justify-between px-5 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8 lg:px-10 lg:pt-9">
             <Link
-              to="/login"
-              aria-label="VulnTrack — sign in"
+              to="/"
+              aria-label="VulnTrack home"
               className="inline-flex min-h-11 items-center rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ion"
             >
               <Logo />

@@ -16,6 +16,12 @@ import { RouteLoading } from './RouteLoading'
  */
 export const router = createBrowserRouter([
   {
+    // Public marketing page; its own chunk so the auth and app bundles don't carry it.
+    path: '/',
+    hydrateFallbackElement: <RouteLoading />,
+    lazy: async () => ({ Component: (await import('@/features/marketing/pages/LandingPage')).LandingPage }),
+  },
+  {
     element: <AuthLayout />,
     children: [
       { path: '/login', element: <LoginPage /> },
@@ -54,5 +60,5 @@ export const router = createBrowserRouter([
       { path: 'settings', lazy: async () => ({ Component: (await import('@/features/organization/pages/SettingsPage')).SettingsPage }) },
     ],
   },
-  { path: '*', element: <Navigate to="/login" replace /> },
+  { path: '*', element: <Navigate to="/" replace /> },
 ])
