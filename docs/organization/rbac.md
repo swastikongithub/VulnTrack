@@ -38,7 +38,7 @@ Naming follows the existing `resource:action` convention (`organization.read` in
 | `assets:create` | ✔ | ✔ | ✔ | | | create asset |
 | `assets:update` | ✔ | ✔ | ✔ | | | edit asset fields and lifecycle |
 | `assets:delete` | ✔ | ✔ | | | | archive, restore, permanently delete |
-| `vulnerabilities:read` | ✔ | ✔ | ✔ | ✔ | ✔ | *reserved* |
+| `vulnerabilities:read` | ✔ | ✔ | ✔ | ✔ | ✔ | global vulnerability catalogue: list, summary, detail (Phase 6) |
 | `findings:read` | ✔ | ✔ | ✔ | ✔ | ✔ | *reserved* |
 | `findings:create` | ✔ | ✔ | ✔ | | | *reserved* |
 | `findings:update` | ✔ | ✔ | ✔ | | | *reserved* |
@@ -53,7 +53,7 @@ Decisions behind the matrix (refining master plan §5.10):
 - **Developers and viewers can't list members.** The plan gives them "None" for Users.
 - **Developers don't get `findings:update`.** The plan says developers update *assigned* findings. A
   blanket grant would be too broad, so the findings phase adds a row-scoped permission instead.
-- **Reserved permissions have no endpoints.** They exist so the matrix is reviewed as a whole. The `assets:*` permissions became active in Phase 4 without changes to the grants ([../assets/security.md](../assets/security.md)).
+- **Reserved permissions have no endpoints.** They exist so the matrix is reviewed as a whole. The `assets:*` permissions became active in Phase 4 and `vulnerabilities:read` in Phase 6, both without changes to the grants ([../assets/security.md](../assets/security.md), [../vulnerabilities/security.md](../vulnerabilities/security.md)).
 - The module throws at startup if a permission lacks a grant entry or a grant names an unknown role
   or permission.
 

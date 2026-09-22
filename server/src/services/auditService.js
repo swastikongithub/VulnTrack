@@ -29,6 +29,9 @@ export const AUDIT_ACTIONS = Object.freeze({
   SOFTWARE_CREATE: 'software.create',
   SOFTWARE_UPDATE: 'software.update',
   SOFTWARE_DELETE: 'software.delete',
+
+  /** A vulnerability-intelligence ingestion run finished (system event: no user, no organization). */
+  VULNERABILITY_SYNC: 'vulnerability.sync',
 })
 
 /**

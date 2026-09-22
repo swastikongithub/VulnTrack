@@ -13,7 +13,8 @@
     "start": "node --env-file-if-exists=.env src/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "oxlint src tests"
+    "lint": "oxlint src tests scripts",
+    "vulns:sync": "node --env-file-if-exists=.env scripts/sync-vulnerabilities.js"
   },
   "devDependencies": {
     "mongodb-memory-server": "^11.2.0",

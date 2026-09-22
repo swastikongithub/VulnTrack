@@ -12,16 +12,17 @@ const STAGES = [
       { title: 'Organizations & roles', body: 'Workspaces, invitations, five roles, organization switching.' },
       { title: 'Asset inventory', body: 'Typed, classified, owned assets with search, filters and lifecycle.' },
       { title: 'Software & dependency inventory', body: 'Record the software components each asset runs, with versions.' },
+      { title: 'Vulnerability intelligence', body: 'Public advisories from NVD and OSV in one searchable catalogue.' },
     ],
   },
   {
     status: 'next',
-    items: [{ title: 'Vulnerability intelligence', body: 'Public advisory data (CVE and related sources).' }],
+    items: [{ title: 'Vulnerability matching', body: 'Connect advisories to the software your assets run.' }],
   },
   {
     status: 'planned',
     items: [
-      { title: 'Matching & findings', body: 'Connect advisories to the software your assets run.' },
+      { title: 'Findings', body: 'Track each affected asset as an actionable finding.' },
       { title: 'Risk prioritization', body: 'Rank findings using criticality and exposure you already record.' },
       { title: 'Remediation tracking', body: 'Assign, track and verify fixes.' },
       { title: 'Authorized scanning', body: 'Discovery for targets you explicitly authorize.' },
