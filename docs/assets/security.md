@@ -58,7 +58,7 @@ Decisions:
 | `asset.create` | `resourceType: 'asset'`, `resourceId`, `metadata.changes` (type, environment, criticality, exposure, status) |
 | `asset.update` | `metadata.fields` (changed field names) + `metadata.changes` (before/after for enumerated fields only) |
 | `asset.archive` / `asset.restore` | resource reference |
-| `asset.delete` | resource reference + the deleted asset's type, environment and criticality |
+| `asset.delete` | resource reference + the deleted asset's type, environment and criticality, and `metadata.count`: how many software components went with it |
 | `authorization.denied` | permission and role for denied writes |
 
 Free text (names, descriptions, identifiers) is not copied into audit logs.
@@ -90,7 +90,8 @@ Free text (names, descriptions, identifiers) is not copied into audit logs.
 - **Tag filter** accepts a single tag. The API accepts lists for enumerated filters, but the UI sends one value per filter.
 - **No bulk import or export**, and no bulk edit.
 - **No per-asset history view**. Events are in the audit log; the audit UI is a later phase.
-- **Delete doesn't yet check references.** Nothing references assets today; this must change when findings or software inventory arrive.
+- **Delete cascades to software components** (one transaction, count audited). Findings and any
+  later referencing collection must be added to that same transaction.
 - **Local development cookies:** browsers share cookies across ports on `localhost`. Two local
   VulnTrack stacks (e.g. `:5173` and `:5174`) sign each other out. Use `127.0.0.1` for a second
   stack. This doesn't affect deployments.

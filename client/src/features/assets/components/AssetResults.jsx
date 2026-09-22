@@ -116,14 +116,14 @@ export function AssetResults({ assets, busy, caption }) {
   )
 }
 
-export function Pagination({ page, totalPages, total, pageSize, onPage, busy }) {
+export function Pagination({ page, totalPages, total, pageSize, onPage, busy, noun = ['asset', 'assets'] }) {
   if (total === 0) return null
   const from = (page - 1) * pageSize + 1
   const to = Math.min(total, page * pageSize)
   return (
     <nav aria-label="Pagination" className="flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle px-4 py-3 sm:px-6">
       <p className="text-caption tabular text-fg-subtle" aria-live="polite">
-        {from}–{to} of {total} {total === 1 ? 'asset' : 'assets'}
+        {from}–{to} of {total} {total === 1 ? noun[0] : noun[1]}
       </p>
       {totalPages > 1 && (
         <div className="flex items-center gap-2">

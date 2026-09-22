@@ -17,6 +17,7 @@ import { createInvitationService } from './services/invitationService.js'
 import { createMemberService } from './services/memberService.js'
 import { createOrganizationService } from './services/organizationService.js'
 import { createSessionService } from './services/sessionService.js'
+import { createSoftwareService } from './services/softwareService.js'
 
 /**
  * Builds the Express application. Dependencies are injected so tests can
@@ -30,6 +31,7 @@ export function createApp({ config, logger, mailer }) {
   const members = createMemberService({ audit })
   const invitations = createInvitationService({ config, mailer, audit })
   const assets = createAssetService({ audit })
+  const software = createSoftwareService({ audit })
 
   const app = express()
   app.disable('x-powered-by')
@@ -73,7 +75,7 @@ export function createApp({ config, logger, mailer }) {
     originGuard(config),
     requireJsonBody,
     loadSession({ config, sessions }),
-    createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets }),
+    createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets, software }),
   )
 
   app.use(notFound)

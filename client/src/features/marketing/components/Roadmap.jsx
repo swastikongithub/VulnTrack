@@ -11,16 +11,16 @@ const STAGES = [
       { title: 'Accounts & sessions', body: 'Sign-up, email verification, password reset, secure sessions.' },
       { title: 'Organizations & roles', body: 'Workspaces, invitations, five roles, organization switching.' },
       { title: 'Asset inventory', body: 'Typed, classified, owned assets with search, filters and lifecycle.' },
+      { title: 'Software & dependency inventory', body: 'Record the software components each asset runs, with versions.' },
     ],
   },
   {
     status: 'next',
-    items: [{ title: 'Software & dependency inventory', body: 'Record the software components each asset runs, with versions.' }],
+    items: [{ title: 'Vulnerability intelligence', body: 'Public advisory data (CVE and related sources).' }],
   },
   {
     status: 'planned',
     items: [
-      { title: 'Vulnerability intelligence', body: 'Public advisory data (CVE and related sources).' },
       { title: 'Matching & findings', body: 'Connect advisories to the software your assets run.' },
       { title: 'Risk prioritization', body: 'Rank findings using criticality and exposure you already record.' },
       { title: 'Remediation tracking', body: 'Assign, track and verify fixes.' },

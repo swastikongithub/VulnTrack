@@ -81,13 +81,13 @@ export function Hero() {
               <dt>
                 <StatusTag status="available" />
               </dt>
-              <dd className="text-fg-muted">Asset inventory · Teams &amp; roles · Audit logging</dd>
+              <dd className="text-fg-muted">Asset inventory · Software inventory · Teams &amp; roles · Audit logging</dd>
             </div>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
               <dt>
                 <StatusTag status="next" />
               </dt>
-              <dd className="text-fg-muted">Software &amp; dependency inventory</dd>
+              <dd className="text-fg-muted">Vulnerability intelligence</dd>
             </div>
           </motion.dl>
         </div>

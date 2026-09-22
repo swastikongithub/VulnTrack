@@ -9,6 +9,7 @@ import { handleSessionLoss, useApiResource } from '@/features/organization/hooks
 import { archiveAsset, deleteAsset, getAsset, restoreAsset } from '@/services/assets/assetApi'
 import { describeAssetError } from '@/services/assets/assetErrors'
 import { paced } from '@/services/organization/organizationApi'
+import { AssetSoftwarePanel } from '@/features/software/components/AssetSoftwarePanel'
 import { useClearFlashOnce } from '../useFlash'
 import { ArchivedChip, AssetTypeIcon, CriticalityMeter, ExposureChip, LifecycleChip, MetaChip, TagList } from '../components/AssetSignals'
 
@@ -246,6 +247,10 @@ function AssetDetail({ asset, replace, reload }) {
           </StaggerItem>
 
           <StaggerItem>
+            <AssetSoftwarePanel asset={asset} />
+          </StaggerItem>
+
+          <StaggerItem>
             <Panel headingId="classification-heading" eyebrow="Classification" title="Tags and technologies">
               <div className="grid gap-6 px-5 py-5 sm:grid-cols-2 sm:px-6">
                 <div>
@@ -265,7 +270,7 @@ function AssetDetail({ asset, replace, reload }) {
                   ) : (
                     <p className="text-caption text-fg-subtle">None</p>
                   )}
-                  <p className="mt-3 text-caption text-fg-subtle">Labels only. Versioned software inventory arrives in a later phase.</p>
+                  <p className="mt-3 text-caption text-fg-subtle">Descriptive labels only. Versioned packages go in the Software panel.</p>
                 </div>
               </div>
             </Panel>

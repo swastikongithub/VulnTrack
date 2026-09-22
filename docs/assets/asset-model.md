@@ -67,8 +67,9 @@ Two independent dimensions:
    - **Archive** (owner/admin): hidden from the default listing, read-only, identifiers freed.
    - **Restore:** back to live; fails with `409 ASSET_IDENTIFIER_EXISTS` if another live asset took
      one of its identifiers meanwhile.
-   - **Delete:** permanent, archived assets only (`409 ASSET_NOT_ARCHIVED` otherwise). The audit log
-     keeps the record that it existed.
+   - **Delete:** permanent, archived assets only (`409 ASSET_NOT_ARCHIVED` otherwise). The asset's
+     software components are deleted with it, in the same transaction; the audit entry records how
+     many (`metadata.count`). The audit log keeps the record that the asset existed.
 
 A retired asset is still a record of something that existed. Archiving is the inventory hygiene
 action.
@@ -133,8 +134,8 @@ renders them as text, never as links.
 
 | Phase | Hook already in place |
 |---|---|
-| Software inventory | Components reference `assetId` (+ `organizationId`); `technologies` stays as display labels |
-| Vulnerability matching and findings | Findings reference `assetId`; matching reads identifiers and inventory. **Before adding findings, make `DELETE` block (or cascade) when records reference the asset.** |
+| Software inventory | **Implemented** (`docs/software/`): components reference `assetId` (+ `organizationId`), archive state is mirrored to them and delete cascades. `technologies` stays as display labels |
+| Vulnerability matching and findings | Findings reference `assetId` and a software component; matching reads identifiers, inventory and component identity. Delete already cascades to software — any further referencing collection must be added to that transaction. |
 | Risk prioritization | `criticality`/`criticalityRank`, `environment` and `exposure` are the organizational context inputs (§32). No score is computed now. |
 | Scanning / imports / integrations | `identifierKeys` for matching and de-duplication, `discovery.source/externalId/lastSeenAt`, and the unique external-ID index. Only explicitly authorized targets may be scanned (§36). |
 | Audit log UI | Asset events are queryable by `resourceType: 'asset'` + `resourceId`. |

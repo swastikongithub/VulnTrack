@@ -25,6 +25,10 @@ export const AUDIT_ACTIONS = Object.freeze({
   ASSET_ARCHIVE: 'asset.archive',
   ASSET_RESTORE: 'asset.restore',
   ASSET_DELETE: 'asset.delete',
+
+  SOFTWARE_CREATE: 'software.create',
+  SOFTWARE_UPDATE: 'software.update',
+  SOFTWARE_DELETE: 'software.delete',
 })
 
 /**

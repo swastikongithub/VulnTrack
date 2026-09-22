@@ -56,6 +56,7 @@ export const router = createBrowserRouter([
           return { Component: () => <AssetFormPage mode="edit" /> }
         },
       },
+      { path: 'software', lazy: async () => ({ Component: (await import('@/features/software/pages/SoftwareInventoryPage')).SoftwareInventoryPage }) },
       { path: 'members', lazy: async () => ({ Component: (await import('@/features/organization/pages/MembersPage')).MembersPage }) },
       { path: 'settings', lazy: async () => ({ Component: (await import('@/features/organization/pages/SettingsPage')).SettingsPage }) },
     ],

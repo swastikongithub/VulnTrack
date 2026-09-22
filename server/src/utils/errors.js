@@ -24,6 +24,9 @@ export const ERROR_CODES = Object.freeze({
   ASSET_ARCHIVED: 'ASSET_ARCHIVED',
   ASSET_NOT_ARCHIVED: 'ASSET_NOT_ARCHIVED',
   ASSET_LIMIT_REACHED: 'ASSET_LIMIT_REACHED',
+  SOFTWARE_COMPONENT_EXISTS: 'SOFTWARE_COMPONENT_EXISTS',
+  SOFTWARE_CONFLICT: 'SOFTWARE_CONFLICT',
+  SOFTWARE_LIMIT_REACHED: 'SOFTWARE_LIMIT_REACHED',
   SERVER: 'SERVER',
 })
 
@@ -70,6 +73,19 @@ export const errors = {
     new AppError(409, ERROR_CODES.ASSET_NOT_ARCHIVED, 'Only archived assets can be deleted. Archive it first.'),
   assetLimitReached: () =>
     new AppError(409, ERROR_CODES.ASSET_LIMIT_REACHED, 'This organization has reached its asset limit.'),
+  softwareComponentExists: () =>
+    new AppError(409, ERROR_CODES.SOFTWARE_COMPONENT_EXISTS, 'This asset already lists this package at this version.', {
+      fields: { version: 'Already listed for this asset' },
+    }),
+  softwareConflict: () =>
+    new AppError(409, ERROR_CODES.SOFTWARE_CONFLICT, 'This component was changed by someone else. Reload it and try again.'),
+  softwareLimitReached: (scope) =>
+    new AppError(
+      409,
+      ERROR_CODES.SOFTWARE_LIMIT_REACHED,
+      scope === 'asset' ? 'This asset has reached its software component limit.' : 'This organization has reached its software component limit.',
+      { scope },
+    ),
   lastOwner: () =>
     new AppError(409, ERROR_CODES.LAST_OWNER, 'An organization must keep at least one owner.'),
 }

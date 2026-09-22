@@ -18,7 +18,9 @@ UI rules: [../design-system/pages/assets.md](../design-system/pages/assets.md).
   lifecycle status, typed identifiers, tags, technology labels, owning team and contact, and
   server-controlled provenance.
 - **Actions:** create, read, edit (with optimistic concurrency), archive, restore, and permanent
-  delete of archived assets.
+  delete of archived assets (which also removes their software components).
+- **Software:** each asset's dependency inventory lives in its own collection and is documented in
+  [../software/](../software/README.md); the asset detail page carries a Software panel.
 - **Listing:** server-side search, filters, sort and pagination, plus inventory counts.
 - **Controls:** tenant isolation, RBAC through the existing Phase 3 permission catalogue, and an
   audit event for every change.

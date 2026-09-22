@@ -135,3 +135,5 @@ Body `{}` or `{ "revision": n }` (a stale revision gets `409 ASSET_CONFLICT`). â
 
 â†’ `200 { ok: true }`.
 - Archived assets only; a live asset gets `409 ASSET_NOT_ARCHIVED`.
+- The asset's software components are deleted in the same transaction
+  (see [../software/api.md](../software/api.md)).

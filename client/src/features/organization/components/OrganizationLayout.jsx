@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Boxes, LogOut, Settings2, Users } from 'lucide-react'
+import { Boxes, Layers, LogOut, Settings2, Users } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, NavLink, ScrollRestoration, useLocation, useNavigate, useOutlet } from 'react-router'
 import { Alert, Button, IconButton, Logo, Spinner } from '@/design-system/components'
@@ -16,6 +16,7 @@ import { PerimeterMotif } from './PerimeterMotif'
 
 const NAV = [
   { to: '/organization/assets', label: 'Assets', icon: Boxes },
+  { to: '/organization/software', label: 'Software', icon: Layers },
   { to: '/organization/members', label: 'Members', icon: Users },
   { to: '/organization/settings', label: 'Settings', icon: Settings2 },
 ]

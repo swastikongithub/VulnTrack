@@ -12,7 +12,8 @@ import {
 } from '../config/assets.js'
 import { PERMISSIONS, roleHasPermission } from '../config/roles.js'
 import { RATE_LIMITS } from '../config/security.js'
-import { Asset, ASSET_NAME_COLLATION, Membership, User } from '../models/index.js'
+import mongoose from 'mongoose'
+import { Asset, ASSET_NAME_COLLATION, Membership, SoftwareComponent, User } from '../models/index.js'
 import { identifierKey, normalizeIdentifier } from '../utils/assetIdentifiers.js'
 import { errors } from '../utils/errors.js'
 import { isObjectIdString } from '../utils/ids.js'
@@ -423,19 +424,26 @@ export function createAssetService({ audit }) {
 
     let updated
     try {
-      updated = await Asset.findOneAndUpdate(
-        { _id: current._id, organizationId: organization._id, revision: current.revision, archived: !archived },
-        {
-          $set: {
-            archived,
-            archivedAt: archived ? new Date() : null,
-            archivedBy: archived ? auth.user._id : null,
-            updatedBy: auth.user._id,
+      // The asset's software follows it in and out of the live inventory (same transaction).
+      updated = await mongoose.connection.transaction(async (session) => {
+        const next = await Asset.findOneAndUpdate(
+          { _id: current._id, organizationId: organization._id, revision: current.revision, archived: !archived },
+          {
+            $set: {
+              archived,
+              archivedAt: archived ? new Date() : null,
+              archivedBy: archived ? auth.user._id : null,
+              updatedBy: auth.user._id,
+            },
+            $inc: { revision: 1 },
           },
-          $inc: { revision: 1 },
-        },
-        { returnDocument: 'after' },
-      ).lean()
+          { returnDocument: 'after', session },
+        ).lean()
+        if (next) {
+          await SoftwareComponent.updateMany({ organizationId: organization._id, assetId: current._id }, { $set: { assetArchived: archived } }, { session })
+        }
+        return next
+      })
     } catch (error) {
       if (error?.code === DUPLICATE_KEY) throw errors.assetIdentifierExists({})
       throw error
@@ -447,22 +455,30 @@ export function createAssetService({ audit }) {
   }
 
   /**
-   * Permanent deletion, only for archived assets. Later phases that attach
-   * records to assets (software inventory, findings) must block or cascade
-   * here; today nothing references assets.
+   * Permanent deletion, only for archived assets. The asset's software
+   * components have no meaning without it and are deleted in the same
+   * transaction (the audit entry records how many). Findings, when they
+   * exist, must be handled here too (block or cascade).
    */
   async function remove({ organization }, assetId, auth, ctx) {
     const current = await findInOrganization(organization._id, assetId)
     if (!current.archived) throw errors.assetNotArchived()
     await enforceWriteLimit(organization._id)
-    const result = await Asset.deleteOne({ _id: current._id, organizationId: organization._id, archived: true })
-    if (result.deletedCount === 0) throw errors.assetConflict()
+    const removedSoftware = await mongoose.connection.transaction(async (session) => {
+      const result = await Asset.deleteOne({ _id: current._id, organizationId: organization._id, archived: true }, { session })
+      if (result.deletedCount === 0) throw errors.assetConflict()
+      const software = await SoftwareComponent.deleteMany({ organizationId: organization._id, assetId: current._id }, { session })
+      return software.deletedCount
+    })
     await record(ctx, AUDIT_ACTIONS.ASSET_DELETE, {
       auth,
       organization,
       asset: current,
       // Keeps the deleted asset's classification in the trail (enumerated values only).
-      metadata: { changes: ['type', 'environment', 'criticality'].map((field) => ({ field, from: current[field], to: null })) },
+      metadata: {
+        changes: ['type', 'environment', 'criticality'].map((field) => ({ field, from: current[field], to: null })),
+        count: removedSoftware,
+      },
     })
     return { ok: true }
   }

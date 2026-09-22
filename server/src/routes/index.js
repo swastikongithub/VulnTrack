@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import { createAssetController } from '../controllers/assetController.js'
 import { createAuthController } from '../controllers/authController.js'
 import { createOrganizationController } from '../controllers/organizationController.js'
+import { createSoftwareController } from '../controllers/softwareController.js'
 import { requireAuth } from '../middleware/authenticate.js'
 import { createAuthorization } from '../middleware/authorize.js'
 import { validateBody } from '../middleware/validate.js'
@@ -15,12 +16,14 @@ import {
 } from '../validators/authValidators.js'
 import { registerAssetRoutes } from './assetRoutes.js'
 import { registerOrganizationRoutes } from './organizationRoutes.js'
+import { registerSoftwareRoutes } from './softwareRoutes.js'
 
-export function createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets }) {
+export function createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets, software }) {
   const router = Router()
   const authController = createAuthController({ config, auth, sessions })
   const organizationController = createOrganizationController({ auth, organizations, members, invitations })
   const assetController = createAssetController({ assets })
+  const softwareController = createSoftwareController({ software })
   const authorization = createAuthorization({ audit })
 
   router.get('/health', (_req, res) => {
@@ -44,6 +47,9 @@ export function createRoutes({ config, auth, sessions, audit, organizations, mem
 
   // ── Asset inventory ──
   registerAssetRoutes(router, { controller: assetController, authorization })
+
+  // ── Software inventory ──
+  registerSoftwareRoutes(router, { controller: softwareController, authorization })
 
   return router
 }

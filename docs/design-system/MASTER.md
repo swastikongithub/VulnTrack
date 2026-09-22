@@ -184,7 +184,7 @@ uses icon + text + a screen-reader "met/not met" state. Policy: ≥12 characters
 - **SelectField:** native `<select>` with the TextField well, ring states and brackets. The `compact` variant (44px, `aria-label`) is for table rows.
 - **Dialog:** native `<dialog>` via `showModal()`. Focus starts on the least destructive action and returns to the opener; Escape and backdrop close it. Destructive confirmations use `Button variant="danger"`, the only place that variant appears.
 
-Page-specific rules: `pages/organization.md`, `pages/assets.md`.
+Page-specific rules: `pages/organization.md`, `pages/assets.md`, `pages/software.md`.
 
 ### TextLink, IconButton, Spinner, Logo
 - **TextLink:** Ion, underline on hover; standalone links get `min-h-11`.

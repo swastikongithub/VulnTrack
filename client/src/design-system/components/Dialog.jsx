@@ -11,6 +11,7 @@ import { duration, ease } from '../motion/tokens'
  *
  * Render it only while open (e.g. `{target && <Dialog … />}`).
  * `initialFocusRef` should point at the least destructive action.
+ * Content taller than the viewport scrolls inside the panel.
  */
 export function Dialog({ title, description, children, onClose, initialFocusRef, tone = 'default', className }) {
   const ref = useRef(null)
@@ -52,7 +53,7 @@ export function Dialog({ title, description, children, onClose, initialFocusRef,
         initial={{ opacity: 0, y: 10, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: duration.moderate, ease: ease.enter }}
-        className="relative rounded-xl bg-surface p-6 shadow-e3 ring-1 ring-line-strong"
+        className="relative max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-xl bg-surface p-6 shadow-e3 ring-1 ring-line-strong"
       >
         <span
           aria-hidden="true"

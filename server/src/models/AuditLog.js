@@ -29,14 +29,18 @@ const auditLogSchema = new mongoose.Schema(
           previousRole: { type: String, maxlength: 32 },
           permission: { type: String, maxlength: 64 },
           fields: { type: [{ type: String, maxlength: 32 }], default: undefined },
+          /** Parent asset of a software component event. */
+          assetId: { type: mongoose.Schema.Types.ObjectId },
+          /** Number of records affected (e.g. software removed with a deleted asset). */
+          count: { type: Number },
           /** Before/after of enumerated fields only (criticality, status…) — never free text. */
           changes: {
             type: [
               new mongoose.Schema(
                 {
                   field: { type: String, maxlength: 32 },
-                  from: { type: String, maxlength: 64 },
-                  to: { type: String, maxlength: 64 },
+                  from: { type: String, maxlength: 340 },
+                  to: { type: String, maxlength: 340 },
                 },
                 { _id: false },
               ),
