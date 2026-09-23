@@ -4,6 +4,7 @@ import { createAssetController } from '../controllers/assetController.js'
 import { createAuthController } from '../controllers/authController.js'
 import { createOrganizationController } from '../controllers/organizationController.js'
 import { createSoftwareController } from '../controllers/softwareController.js'
+import { createMatchController } from '../controllers/matchController.js'
 import { createVulnerabilityController } from '../controllers/vulnerabilityController.js'
 import { requireAuth } from '../middleware/authenticate.js'
 import { createAuthorization } from '../middleware/authorize.js'
@@ -18,15 +19,17 @@ import {
 import { registerAssetRoutes } from './assetRoutes.js'
 import { registerOrganizationRoutes } from './organizationRoutes.js'
 import { registerSoftwareRoutes } from './softwareRoutes.js'
+import { registerMatchRoutes } from './matchRoutes.js'
 import { registerVulnerabilityRoutes } from './vulnerabilityRoutes.js'
 
-export function createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets, software, vulnerabilities }) {
+export function createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets, software, vulnerabilities, matches }) {
   const router = Router()
   const authController = createAuthController({ config, auth, sessions })
   const organizationController = createOrganizationController({ auth, organizations, members, invitations })
   const assetController = createAssetController({ assets })
   const softwareController = createSoftwareController({ software })
   const vulnerabilityController = createVulnerabilityController({ vulnerabilities })
+  const matchController = createMatchController({ matches })
   const authorization = createAuthorization({ audit })
 
   router.get('/health', (_req, res) => {
@@ -56,6 +59,9 @@ export function createRoutes({ config, auth, sessions, audit, organizations, mem
 
   // ── Vulnerability intelligence (global catalogue, read-only) ──
   registerVulnerabilityRoutes(router, { controller: vulnerabilityController, authorization })
+
+  // ── Vulnerability matching (tenant-owned, derived from inventory + catalogue) ──
+  registerMatchRoutes(router, { controller: matchController, authorization })
 
   return router
 }

@@ -18,6 +18,8 @@ import { createMemberService } from './services/memberService.js'
 import { createOrganizationService } from './services/organizationService.js'
 import { createSessionService } from './services/sessionService.js'
 import { createSoftwareService } from './services/softwareService.js'
+import { createMatchService } from './services/matchService.js'
+import { createMatchRunner } from './services/matching/matchRunner.js'
 import { createVulnerabilityService } from './services/vulnerabilityService.js'
 
 /**
@@ -34,6 +36,7 @@ export function createApp({ config, logger, mailer }) {
   const assets = createAssetService({ audit })
   const software = createSoftwareService({ audit })
   const vulnerabilities = createVulnerabilityService()
+  const matches = createMatchService({ runner: createMatchRunner({ audit, logger }) })
 
   const app = express()
   app.disable('x-powered-by')
@@ -77,7 +80,7 @@ export function createApp({ config, logger, mailer }) {
     originGuard(config),
     requireJsonBody,
     loadSession({ config, sessions }),
-    createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets, software, vulnerabilities }),
+    createRoutes({ config, auth, sessions, audit, organizations, members, invitations, assets, software, vulnerabilities, matches }),
   )
 
   app.use(notFound)

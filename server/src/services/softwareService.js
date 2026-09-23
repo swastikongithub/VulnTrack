@@ -9,7 +9,7 @@ import {
   SOFTWARE_SOURCES,
   labelOf,
 } from '../config/software.js'
-import { Asset, SoftwareComponent, User } from '../models/index.js'
+import { Asset, SoftwareComponent, User, VulnerabilityMatch } from '../models/index.js'
 import { errors } from '../utils/errors.js'
 import { isObjectIdString } from '../utils/ids.js'
 import { normalizeComponent } from '../utils/softwareIdentity.js'
@@ -340,6 +340,12 @@ export function createSoftwareService({ audit }) {
     }
     if (!updated) throw errors.softwareConflict()
 
+    // The identity that was matched has changed, so the stored matches no longer describe this
+    // component. They are dropped here and rebuilt by the next matching run.
+    if (IDENTITY.some((key) => changed.includes(key)) || changed.includes('componentKey') || changed.includes('versionNormalized')) {
+      await VulnerabilityMatch.deleteMany({ organizationId: organization._id, componentId: current._id })
+    }
+
     await record(ctx, AUDIT_ACTIONS.SOFTWARE_UPDATE, {
       auth,
       organization,
@@ -355,6 +361,7 @@ export function createSoftwareService({ audit }) {
     await enforceWriteLimit(organization._id)
     const result = await SoftwareComponent.deleteOne({ _id: current._id, organizationId: organization._id, assetArchived: false })
     if (result.deletedCount === 0) throw errors.softwareConflict()
+    await VulnerabilityMatch.deleteMany({ organizationId: organization._id, componentId: current._id })
     await record(ctx, AUDIT_ACTIONS.SOFTWARE_DELETE, { auth, organization, component: current, metadata: { changes: changes(current, null) } })
     return { ok: true }
   }

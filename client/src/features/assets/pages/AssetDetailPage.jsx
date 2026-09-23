@@ -9,6 +9,7 @@ import { handleSessionLoss, useApiResource } from '@/features/organization/hooks
 import { archiveAsset, deleteAsset, getAsset, restoreAsset } from '@/services/assets/assetApi'
 import { describeAssetError } from '@/services/assets/assetErrors'
 import { paced } from '@/services/organization/organizationApi'
+import { MatchesPanel } from '@/features/matches/components/MatchesPanel'
 import { AssetSoftwarePanel } from '@/features/software/components/AssetSoftwarePanel'
 import { useClearFlashOnce } from '../useFlash'
 import { ArchivedChip, AssetTypeIcon, CriticalityMeter, ExposureChip, LifecycleChip, MetaChip, TagList } from '../components/AssetSignals'
@@ -248,6 +249,15 @@ function AssetDetail({ asset, replace, reload }) {
 
           <StaggerItem>
             <AssetSoftwarePanel asset={asset} />
+          </StaggerItem>
+
+          <StaggerItem>
+            <MatchesPanel
+              assetId={asset.id}
+              includeArchived={asset.archived}
+              title="Potential matches"
+              empty="No advisory in the catalogue matches this asset's software."
+            />
           </StaggerItem>
 
           <StaggerItem>

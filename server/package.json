@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "oxlint src tests scripts",
-    "vulns:sync": "node --env-file-if-exists=.env scripts/sync-vulnerabilities.js"
+    "vulns:sync": "node --env-file-if-exists=.env scripts/sync-vulnerabilities.js",
+    "matches:recompute": "node --env-file-if-exists=.env scripts/recalculate-matches.js"
   },
   "devDependencies": {
     "mongodb-memory-server": "^11.2.0",

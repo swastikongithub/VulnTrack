@@ -27,6 +27,8 @@ export const ERROR_CODES = Object.freeze({
   SOFTWARE_COMPONENT_EXISTS: 'SOFTWARE_COMPONENT_EXISTS',
   SOFTWARE_CONFLICT: 'SOFTWARE_CONFLICT',
   SOFTWARE_LIMIT_REACHED: 'SOFTWARE_LIMIT_REACHED',
+  MATCHING_IN_PROGRESS: 'MATCHING_IN_PROGRESS',
+  MATCHING_FAILED: 'MATCHING_FAILED',
   SERVER: 'SERVER',
 })
 
@@ -86,6 +88,10 @@ export const errors = {
       scope === 'asset' ? 'This asset has reached its software component limit.' : 'This organization has reached its software component limit.',
       { scope },
     ),
+  matchingInProgress: () =>
+    new AppError(409, ERROR_CODES.MATCHING_IN_PROGRESS, 'A matching run is already in progress for this organization.'),
+  matchingFailed: () =>
+    new AppError(503, ERROR_CODES.MATCHING_FAILED, 'Matching could not be completed. Try again in a moment.'),
   lastOwner: () =>
     new AppError(409, ERROR_CODES.LAST_OWNER, 'An organization must keep at least one owner.'),
 }

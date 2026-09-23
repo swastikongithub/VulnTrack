@@ -51,9 +51,9 @@ export const PERMISSIONS = Object.freeze({
   MEMBERS_UPDATE_ROLE: 'members:update_role',
   MEMBERS_REMOVE: 'members:remove',
 
-  // Product permissions. assets:* (Phase 4) and vulnerabilities:read (Phase 6) are in
-  // use; the rest are reserved for later phases, granted here so the matrix is
-  // reviewed as a whole.
+  // Product permissions. assets:* (Phase 4), vulnerabilities:read (Phase 6) and
+  // findings:create (Phase 7, recalculating matches) are in use; the rest are
+  // reserved for later phases, granted here so the matrix is reviewed as a whole.
   ASSETS_READ: 'assets:read',
   ASSETS_CREATE: 'assets:create',
   ASSETS_UPDATE: 'assets:update',

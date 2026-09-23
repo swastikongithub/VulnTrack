@@ -32,6 +32,9 @@ export const AUDIT_ACTIONS = Object.freeze({
 
   /** A vulnerability-intelligence ingestion run finished (system event: no user, no organization). */
   VULNERABILITY_SYNC: 'vulnerability.sync',
+
+  /** A matching run finished for one organization. */
+  MATCHING_RUN: 'matching.run',
 })
 
 /**

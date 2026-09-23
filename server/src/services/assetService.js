@@ -13,7 +13,7 @@ import {
 import { PERMISSIONS, roleHasPermission } from '../config/roles.js'
 import { RATE_LIMITS } from '../config/security.js'
 import mongoose from 'mongoose'
-import { Asset, ASSET_NAME_COLLATION, Membership, SoftwareComponent, User } from '../models/index.js'
+import { Asset, ASSET_NAME_COLLATION, Membership, SoftwareComponent, User, VulnerabilityMatch } from '../models/index.js'
 import { identifierKey, normalizeIdentifier } from '../utils/assetIdentifiers.js'
 import { errors } from '../utils/errors.js'
 import { isObjectIdString } from '../utils/ids.js'
@@ -398,6 +398,11 @@ export function createAssetService({ audit }) {
     }
     if (!updated) throw errors.assetConflict()
 
+    // Matches carry the asset name for display and sorting; keep it in step.
+    if (changedFields.includes('name')) {
+      await VulnerabilityMatch.updateMany({ organizationId: organization._id, assetId: current._id }, { $set: { assetName: updated.name } })
+    }
+
     await record(ctx, AUDIT_ACTIONS.ASSET_UPDATE, {
       auth,
       organization,
@@ -441,6 +446,8 @@ export function createAssetService({ audit }) {
         ).lean()
         if (next) {
           await SoftwareComponent.updateMany({ organizationId: organization._id, assetId: current._id }, { $set: { assetArchived: archived } }, { session })
+          // Matches are derived from those components and follow them out of the live views.
+          await VulnerabilityMatch.updateMany({ organizationId: organization._id, assetId: current._id }, { $set: { assetArchived: archived } }, { session })
         }
         return next
       })
@@ -457,8 +464,8 @@ export function createAssetService({ audit }) {
   /**
    * Permanent deletion, only for archived assets. The asset's software
    * components have no meaning without it and are deleted in the same
-   * transaction (the audit entry records how many). Findings, when they
-   * exist, must be handled here too (block or cascade).
+   * transaction (the audit entry records how many), along with the matches
+   * derived from them. Findings, when they exist, must be handled here too.
    */
   async function remove({ organization }, assetId, auth, ctx) {
     const current = await findInOrganization(organization._id, assetId)
@@ -468,6 +475,8 @@ export function createAssetService({ audit }) {
       const result = await Asset.deleteOne({ _id: current._id, organizationId: organization._id, archived: true }, { session })
       if (result.deletedCount === 0) throw errors.assetConflict()
       const software = await SoftwareComponent.deleteMany({ organizationId: organization._id, assetId: current._id }, { session })
+      // Matches describe those components; without them they mean nothing.
+      await VulnerabilityMatch.deleteMany({ organizationId: organization._id, assetId: current._id }, { session })
       return software.deletedCount
     })
     await record(ctx, AUDIT_ACTIONS.ASSET_DELETE, {

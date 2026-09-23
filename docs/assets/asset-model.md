@@ -135,7 +135,8 @@ renders them as text, never as links.
 | Phase | Hook already in place |
 |---|---|
 | Software inventory | **Implemented** (`docs/software/`): components reference `assetId` (+ `organizationId`), archive state is mirrored to them and delete cascades. `technologies` stays as display labels |
-| Vulnerability matching and findings | Findings reference `assetId` and a software component; matching reads identifiers, inventory and component identity. Delete already cascades to software — any further referencing collection must be added to that transaction. |
+| Vulnerability matching | **Implemented** (`docs/matching/`): matches reference the asset and its components, follow archive state, and are deleted in the asset-delete transaction. |
+| Findings | Findings will reference an asset, a component and a match. Delete already cascades to software and matches — any further referencing collection must be added to that transaction. |
 | Risk prioritization | `criticality`/`criticalityRank`, `environment` and `exposure` are the organizational context inputs (§32). No score is computed now. |
 | Scanning / imports / integrations | `identifierKeys` for matching and de-duplication, `discovery.source/externalId/lastSeenAt`, and the unique external-ID index. Only explicitly authorized targets may be scanned (§36). |
 | Audit log UI | Asset events are queryable by `resourceType: 'asset'` + `resourceId`. |

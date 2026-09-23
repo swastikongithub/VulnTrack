@@ -57,6 +57,8 @@ export const router = createBrowserRouter([
         },
       },
       { path: 'software', lazy: async () => ({ Component: (await import('@/features/software/pages/SoftwareInventoryPage')).SoftwareInventoryPage }) },
+      { path: 'matches', lazy: async () => ({ Component: (await import('@/features/matches/pages/MatchesPage')).MatchesPage }) },
+      { path: 'matches/:matchId', lazy: async () => ({ Component: (await import('@/features/matches/pages/MatchDetailPage')).MatchDetailPage }) },
       {
         path: 'vulnerabilities',
         lazy: async () => ({ Component: (await import('@/features/vulnerabilities/pages/VulnerabilityCatalogPage')).VulnerabilityCatalogPage }),

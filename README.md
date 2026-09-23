@@ -6,7 +6,8 @@ VulnTrack is a cybersecurity vulnerability management platform for organizations
 - **Authentication:** complete end to end. The animated authentication UI (`client/`) runs on the real authentication API (`server/`) with MongoDB.
 - **Asset management:** organization-scoped asset inventory (types, environment, criticality, exposure, lifecycle, typed identifiers, tags, ownership) with server-side search, filters and pagination; archive, restore and delete; audit (`/organization/assets`).
 - **Software inventory:** per-asset software and dependency records (ecosystem, package, version, direct/transitive, runtime/development) with canonical identity (normalized package key, normalized version, Package URL), organization-wide search, filters and pagination, and audit (`/organization/software`).
-- **Vulnerability intelligence:** a global, read-only catalogue of public advisories ingested from NVD and OSV through source adapters into one normalized model (CVSS, CWE, references, affected packages and CPE products, CISA known-exploited status), with ID and keyword search, filters and per-source freshness (`/organization/vulnerabilities`). Filled by an operator worker: `npm run vulns:sync` ([docs/vulnerabilities/ingestion.md](docs/vulnerabilities/ingestion.md)). Not yet matched against software inventory.
+- **Vulnerability intelligence:** a global, read-only catalogue of public advisories ingested from NVD and OSV through source adapters into one normalized model (CVSS, CWE, references, affected packages and CPE products, CISA known-exploited status), with ID and keyword search, filters and per-source freshness (`/organization/vulnerabilities`). Filled by an operator worker: `npm run vulns:sync` ([docs/vulnerabilities/ingestion.md](docs/vulnerabilities/ingestion.md)).
+- **Vulnerability matching:** connects the software inventory to the catalogue — canonical package identity, per-ecosystem version comparison and OSV range evaluation — producing explainable potential matches with a status, confidence and reason (`/organization/matches`). Recomputed on demand (`npm run matches:recompute`). Not findings: no workflow, owner or risk score yet.
 - **Organizations & RBAC:** multi-tenant organizations with a central permission model, owner/admin hierarchy, invitations, organization switching, and the members and settings screens (`/organization/*`, `/invite`).
 - **Marketing page:** public landing page at `/` describing only shipped functionality, with a clearly labelled roadmap (see `docs/design-system/pages/marketing.md`).
 
@@ -41,3 +42,4 @@ npm run vulns:sync -- --source nvd --since 2026-09-01          # recent CVEs (th
 - `docs/assets/` — asset model, lifecycle and identifiers, API, security
 - `docs/software/` — software component model, canonical identity, API, security
 - `docs/vulnerabilities/` — vulnerability model, ingestion worker and CLI, API, security
+- `docs/matching/` — matching engine, version/range strategy, API, security

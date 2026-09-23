@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Boxes, Layers, LogOut, Settings2, ShieldAlert, Users } from 'lucide-react'
+import { Boxes, Crosshair, Layers, LogOut, Settings2, ShieldAlert, Users } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, NavLink, ScrollRestoration, useLocation, useNavigate, useOutlet } from 'react-router'
 import { Alert, Button, IconButton, Logo, Spinner } from '@/design-system/components'
@@ -18,6 +18,7 @@ const NAV = [
   { to: '/organization/assets', label: 'Assets', icon: Boxes },
   { to: '/organization/software', label: 'Software', icon: Layers },
   { to: '/organization/vulnerabilities', label: 'Vulnerabilities', icon: ShieldAlert },
+  { to: '/organization/matches', label: 'Matches', icon: Crosshair },
   { to: '/organization/members', label: 'Members', icon: Users },
   { to: '/organization/settings', label: 'Settings', icon: Settings2 },
 ]

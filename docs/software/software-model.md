@@ -180,7 +180,7 @@ many small writes.
 | Manifest / SBOM import | `source` reserves `import`; identity normalization is already the shape a `package-lock.json` or SBOM parser would produce |
 | Dependency scanning | `source` reserves `scanner`; components are per-asset records a scan can reconcile against |
 | Vulnerability intelligence | **Implemented** (`docs/vulnerabilities/`): OSV advisories' affected packages carry the same `componentKey`, computed with this module's own rules, so the join key already exists on both sides |
-| Vulnerability matching | `versionNormalized` + the ecosystem's `scheme` give a comparator its inputs. **No range semantics, comparator or vulnerability schema is fixed by this phase.** |
+| Vulnerability matching | **Implemented** (`docs/matching/`): `componentKey` is the join key and `versionNormalized` + the ecosystem's `scheme` feed the comparators. Editing a component's identity or version drops its matches, which the next run rebuilds. |
 | Findings | A finding will reference `assetId` **and** the component `_id`; components already carry both, plus `organizationId` |
 | Risk prioritization | The asset's `criticality`, `environment` and `exposure` supply organizational context; `scope: development` is the signal that a component is less exposed |
 | Audit log UI | Component events are queryable by `resourceType: 'software_component'` + `resourceId`, with `metadata.assetId` |

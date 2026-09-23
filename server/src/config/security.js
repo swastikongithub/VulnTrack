@@ -52,6 +52,8 @@ export const RATE_LIMITS = Object.freeze({
   assetWriteOrganization: { limit: 600, windowMs: HOUR },
   /** Per organization: software component creates, updates and deletes combined. */
   softwareWriteOrganization: { limit: 1_200, windowMs: HOUR },
+  /** Recalculating matches reads the whole inventory: a few runs an hour is plenty. */
+  matchingRunOrganization: { limit: 12, windowMs: HOUR },
 })
 
 /** Upper bound on members returned by one listing (pagination arrives with larger teams). */
